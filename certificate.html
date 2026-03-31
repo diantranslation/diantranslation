@@ -222,6 +222,15 @@
         margin-bottom: -320px;
       }
     }
+
+    .pdf-export-mode {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.pdf-export-mode::before {
+  display: none !important;
+}
   </style>
 </head>
 <body>
@@ -484,6 +493,9 @@ function getVerificationUrl(code) {
   const element = document.getElementById("certificate");
   const filename = safeFileName(selectedCertificate.certificateNumber) + ".pdf";
 
+  // remove frame only during export
+  element.classList.add("pdf-export-mode");
+
   const options = {
     margin: [0, 0, 0, 0],
     filename: filename,
@@ -512,6 +524,9 @@ function getVerificationUrl(code) {
   } catch (error) {
     console.error(error);
     status.textContent = "Failed to generate PDF.";
+  } finally {
+    // restore frame after export
+    element.classList.remove("pdf-export-mode");
   }
 }
 
