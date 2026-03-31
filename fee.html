@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kalkulator Biaya Translation / Proofreading</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      margin: 0;
+      padding: 20px;
+      color: #222;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 28px;
+      text-align: center;
+      margin-bottom: 30px;
+      color: #36064D;
+    }
+    h2 {
+      margin-top: 0;
+      font-size: 24px;
+      text-align: center;
+    }
+
+    .field {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+    }
+
+    .toggle-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .toggle-btn {
+      flex: 1;
+      min-width: 150px;
+      padding: 12px 16px;
+      border: 2px solid #ccc;
+      background: #fff;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+
+    .toggle-btn.active {
+      background: #36064D;
+      color: #fff;
+      border-color: #36064D;
+    }
+
+
+    button.action-btn {
+      padding: 12px 18px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .calculate-btn {
+      background: #76D2DB;
+      color: white;
+    }
+    
+
+    .reset-btn {
+      background: #DA4848;
+      color: #fff;
+    }
+    .reset-btn:hover, .calculate-btn:hover{
+        transform: scale(1.05);
+    }
+
+.word-action-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.word-action-row input {
+  flex: 1;
+  min-width: 140px;
+  max-width: 420px;
+}
+
+.word-action-row .action-btn {
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .word-action-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .word-action-row input,
+  .word-action-row .action-btn {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.textarea-wrapper {
+  position: relative;
+}
+
+.copy-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: #ffffff;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  transition: all 0.2s ease;
+  z-index: 2;
+}
+
+.copy-btn:hover {
+  background: #f3f4f6;
+  transform: scale(1.05);
+}
+
+.copy-btn:active {
+  transform: scale(0.98);
+}
+
+textarea {
+  width: 100%;
+  min-height: 260px;
+  padding: 14px;
+  padding-right: 60px; /* room for floating copy button */
+  font-size: 15px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  resize: vertical;
+  line-height: 1.6;
+  background: #fafafa;
+  color: #222;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: #1f7aec;
+  box-shadow: 0 0 0 3px rgba(31, 122, 236, 0.12);
+}
+    .note {
+      font-size: 14px;
+      color: #666;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Biaya Layanan Dian Translation</h1>
+
+        <div class="field">
+      <label>Pilih layanan</label>
+      <div class="toggle-group">
+        <button type="button" class="toggle-btn active" id="proofreadingBtn">Proofreading</button>
+        <button type="button" class="toggle-btn" id="translationBtn">Translation</button>
+      </div>
+    </div>
+    
+<div class="field">
+  <label for="wordCount">Total kata</label>
+
+  <div class="word-action-row">
+    <input
+      type="number"
+      id="wordCount"
+      placeholder="Jumlah kata tanpa references"
+      min="1"
+    />
+
+    <button class="action-btn calculate-btn" onclick="calculateFee()">
+      Hitung Biaya
+    </button>
+
+    <button class="action-btn reset-btn" onclick="resetForm()">
+      Reset
+    </button>
+  </div>
+</div>
+
+
+
+    <div class="field">
+  <label for="result">Hasil</label>
+
+  <div class="textarea-wrapper">
+<button type="button" id="copyBtn" class="copy-btn" onclick="copyResult()" title="Copy hasil">
+  ⧉
+</button>
+    <textarea id="result" readonly placeholder="Total biaya akan muncul di sini..."></textarea>
+  </div>
+
+  <div class="note">
+    Klik ikon copy untuk menyalin hasil.
+  </div>
+</div>
+
+  </div>
+
+  <script>
+    let selectedService = "Proofreading";
+
+    const proofreadingBtn = document.getElementById("proofreadingBtn");
+    const translationBtn = document.getElementById("translationBtn");
+
+    proofreadingBtn.addEventListener("click", () => {
+      selectedService = "Proofreading";
+      proofreadingBtn.classList.add("active");
+      translationBtn.classList.remove("active");
+    });
+
+    translationBtn.addEventListener("click", () => {
+      selectedService = "Translation";
+      translationBtn.classList.add("active");
+      proofreadingBtn.classList.remove("active");
+    });
+
+    const rates = {
+      Proofreading: [
+        { fee: 150, wordsPerDay: 1000 },
+        { fee: 180, wordsPerDay: 1500 },
+        { fee: 200, wordsPerDay: 2000 },
+        { fee: 225, wordsPerDay: 3000 }
+      ],
+      Translation: [
+        { fee: 250, wordsPerDay: 1000 },
+        { fee: 275, wordsPerDay: 1500 },
+        { fee: 300, wordsPerDay: 2000 },
+        { fee: 325, wordsPerDay: 3000 }
+      ]
+    };
+
+    function formatRupiah(number) {
+      return "Rp" + number.toLocaleString("id-ID");
+    }
+
+function calculateDisplayedDays(rawDays) {
+  return Math.max(1, Math.floor(rawDays + 0.5));
+}
+
+function calculateFee() {
+  const wordCount = parseInt(document.getElementById("wordCount").value, 10);
+  const result = document.getElementById("result");
+
+  if (!wordCount || wordCount <= 0) {
+    result.value = "Silakan masukkan total kata yang valid.";
+    return;
+  }
+
+  const serviceRates = rates[selectedService];
+
+  let lines = [];
+  lines.push(`Biaya layanan ${selectedService} manuscript Bapak/Ibu adalah:`);
+
+  const usedDays = new Set();
+
+  serviceRates.forEach(item => {
+    const totalFee = wordCount * item.fee;
+    const rawDays = wordCount / item.wordsPerDay;
+    const totalDays = calculateDisplayedDays(rawDays);
+
+    // Skip if this totalDays already exists
+    if (usedDays.has(totalDays)) return;
+
+    usedDays.add(totalDays);
+
+    lines.push(
+      `- ${formatRupiah(totalFee)} dengan pengerjaan ${totalDays} hari`
+    );
+  });
+
+  result.value = lines.join("\n");
+}
+
+function copyResult() {
+  const textarea = document.getElementById("result");
+  const btn = document.getElementById("copyBtn");
+
+  if (!textarea.value.trim()) return;
+
+  // Modern method
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(textarea.value)
+      .then(() => {
+        btn.textContent = "✅";
+        setTimeout(() => {
+          btn.textContent = "⧉";
+        }, 1500);
+      })
+      .catch(() => {
+        fallbackCopy(textarea, btn);
+      });
+  } else {
+    fallbackCopy(textarea, btn);
+  }
+}
+
+function fallbackCopy(textarea, btn) {
+  textarea.removeAttribute("readonly");
+  textarea.select();
+  textarea.setSelectionRange(0, 99999);
+
+  try {
+    document.execCommand("copy");
+    btn.textContent = "✅";
+  } catch (err) {
+    btn.textContent = "❌";
+  }
+
+  textarea.setAttribute("readonly", true);
+
+  setTimeout(() => {
+    btn.textContent = "⧉";
+  }, 1500);
+}
+
+    function resetForm() {
+      document.getElementById("wordCount").value = "";
+      document.getElementById("result").value = "";
+      selectedService = "Proofreading";
+      proofreadingBtn.classList.add("active");
+      translationBtn.classList.remove("active");
+    }
+  </script>
+</body>
+</html>
