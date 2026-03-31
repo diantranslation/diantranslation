@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Certificate Generator</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px;
+      background: #f4f6f8;
+      font-family: Arial, sans-serif;
+      color: #222;
+    }
+
+    .wrapper {
+      max-width: 1150px;
+      margin: 0 auto;
+    }
+
+    .panel {
+      background: #fff;
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      margin-bottom: 24px;
+    }
+
+    .panel h1 {
+      margin: 0 0 10px;
+      text-align: center;
+      font-size: 30px;
+    }
+
+    .panel p {
+      margin: 0 0 20px;
+      text-align: center;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .form-row input {
+      flex: 1 1 340px;
+      min-width: 260px;
+      padding: 14px 16px;
+      border: 1px solid #d5dbe1;
+      border-radius: 12px;
+      font-size: 16px;
+    }
+
+    .form-row button {
+      border: none;
+      border-radius: 12px;
+      padding: 14px 20px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .search-btn {
+      background: #1f6feb;
+      color: #fff;
+    }
+
+    .download-btn {
+      background: #198754;
+      color: #fff;
+    }
+
+    .download-btn:disabled {
+      background: #9fbba9;
+      cursor: not-allowed;
+    }
+
+    .status {
+      margin-top: 14px;
+      text-align: center;
+      min-height: 22px;
+      color: #444;
+    }
+
+    .certificate-wrap {
+      overflow-x: auto;
+      display: flex;
+      justify-content: center;
+    }
+
+    .certificate {
+      width: 1123px;
+      min-height: 794px;
+      background: #fff;
+      position: relative;
+      padding: 52px 70px;
+      border: 12px solid #d7bf83;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.12);
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    .certificate::before {
+      content: "";
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      right: 16px;
+      bottom: 16px;
+      border: 2px solid #d7bf83;
+      pointer-events: none;
+    }
+
+    .brand {
+      text-align: center;
+      line-height: 1.45;
+      margin-bottom: 26px;
+    }
+
+    .brand .name {
+      font-size: 26px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .brand .sub {
+      font-size: 16px;
+    }
+
+    .brand .contact {
+      font-size: 14px;
+      color: #444;
+    }
+
+    .cert-heading {
+      text-align: center;
+      font-size: 48px;
+      letter-spacing: 9px;
+      font-weight: bold;
+      margin: 20px 0 8px;
+    }
+
+    .cert-number {
+      text-align: center;
+      font-size: 22px;
+      margin-bottom: 34px;
+    }
+
+    .body-text {
+      font-size: 24px;
+      line-height: 1.85;
+      text-align: justify;
+      margin-bottom: 18px;
+    }
+
+    .title-text {
+      font-style: italic;
+      font-weight: bold;
+    }
+
+    .footer {
+      margin-top: 50px;
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .footer-left,
+    .footer-right {
+      width: 46%;
+      font-size: 22px;
+      line-height: 1.8;
+    }
+
+    .signature-space {
+      height: 82px;
+    }
+
+    .signer-name {
+      font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 12px;
+      }
+
+      .certificate {
+        transform: scale(0.55);
+        transform-origin: top center;
+        margin-bottom: -320px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="panel">
+      <h1>Certificate Generator</h1>
+      <p>
+        Enter the verification code in this format:<br>
+        <strong>No-Year-Secret</strong><br>
+        Example: <strong>22-2026-4817</strong>
+      </p>
+
+      <div class="form-row">
+        <input type="text" id="searchInput" placeholder="Example: 22-2026-4817" />
+        <button class="search-btn" onclick="findCertificate()">Find Certificate</button>
+        <button class="download-btn" id="downloadBtn" onclick="downloadPDF()" disabled>Download PDF</button>
+      </div>
+
+      <div class="status" id="status"></div>
+    </div>
+
+    <div class="certificate-wrap">
+      <div class="certificate" id="certificate">
+        <div class="brand">
+          <div class="name">DIAN TRANSLATION</div>
+          <div class="sub">Translation and Proofreading Services</div>
+          <div class="contact">www.diantranslation.com</div>
+          <div class="contact">info@diantranslation.com</div>
+          <div class="contact">62 85 228 001 002</div>
+        </div>
+
+        <div class="cert-heading">CERTIFICATE</div>
+        <div class="cert-number">No. <span id="certNumber">-</span></div>
+
+        <div class="body-text">
+          This document certifies that the manuscript entitled
+          <span class="title-text">“<span id="certTitle">Title will appear here</span>”</span>
+          was edited for proper English language, grammar, punctuation, spelling, and overall style by a qualified proofreader at Dian Translation.
+        </div>
+
+        <div class="body-text">
+          Neither the research content nor the author’s intentions were altered in any way during the proofreading process. Documents receiving this certificate should be ready for publication; however, journal editors’ decisions are based on the quality and suitability of a manuscript for that journal and are entirely independent of whether the manuscript has been language proofread by our service.
+        </div>
+
+        <div class="footer">
+          <div class="footer-left">
+            <div>Batang, <span id="certDate">-</span></div>
+          </div>
+
+          <div class="footer-right">
+            <div>Head of Translator &amp; Proofreading</div>
+            <div>Dian Translation</div>
+            <div class="signature-space"></div>
+            <div class="signer-name">Mochlisin</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQcjvIwmGy0IoeVfU9FA4y3x_cFcLls5YtpsTuSpKQN4m-PNvOiBeeJ7mkVr0fSw5EDEmyVbzp4A05U/pub?gid=1609397311&single=true&output=csv";
+
+  let selectedCertificate = null;
+
+  async function loadSheetData() {
+    const response = await fetch(SHEET_CSV_URL);
+    if (!response.ok) {
+      throw new Error("Failed to fetch CSV.");
+    }
+
+    const csvText = await response.text();
+
+    const parsed = Papa.parse(csvText, {
+      header: true,
+      skipEmptyLines: true
+    });
+
+    return parsed.data;
+  }
+
+  function monthToRoman(monthName) {
+    const months = {
+      january: "I",
+      february: "II",
+      march: "III",
+      april: "IV",
+      may: "V",
+      june: "VI",
+      july: "VII",
+      august: "VIII",
+      september: "IX",
+      october: "X",
+      november: "XI",
+      december: "XII"
+    };
+
+    return months[String(monthName || "").trim().toLowerCase()] || "";
+  }
+
+  function extractYear(dateStr) {
+    const cleanDate = String(dateStr || "").trim();
+    const parts = cleanDate.split(/\s+/);
+    return parts.length >= 3 ? parts[2].trim() : "";
+  }
+
+  function generateCertificateNumber(no, dateStr) {
+    const cleanNo = String(no || "").trim();
+    const cleanDate = String(dateStr || "").trim();
+
+    if (!cleanNo || !cleanDate) return "-";
+
+    const parts = cleanDate.split(/\s+/);
+    if (parts.length < 3) return "-";
+
+    const monthName = parts[1];
+    const year = parts[2];
+    const romanMonth = monthToRoman(monthName);
+
+    if (!romanMonth || !year) return "-";
+
+    return `${cleanNo}/C-DT/${romanMonth}/${year}`;
+  }
+
+  function normalizeValue(value) {
+    return String(value || "")
+      .trim()
+      .toLowerCase();
+  }
+
+  function normalizeKeyPart(value) {
+    return String(value || "")
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "");
+  }
+
+  function parseSearchInput(input) {
+    const cleaned = String(input || "").trim();
+
+    // Accept:
+    // 24-2023-JUG5
+    // 25-2023-TY70
+    // and tolerate spaces around dashes
+    const match = cleaned.match(/^([^-]+)\s*-\s*(\d{4})\s*-\s*([A-Za-z0-9]+)$/);
+
+    if (!match) return null;
+
+    return {
+      no: match[1].trim(),
+      year: match[2].trim(),
+      secret: match[3].trim()
+    };
+  }
+
+  async function findCertificate() {
+    const input = document.getElementById("searchInput").value.trim();
+    const status = document.getElementById("status");
+    const downloadBtn = document.getElementById("downloadBtn");
+
+    selectedCertificate = null;
+    downloadBtn.disabled = true;
+
+    if (!input) {
+      status.textContent = "Please enter No-Year-Secret.";
+      return;
+    }
+
+    const parsedInput = parseSearchInput(input);
+
+    if (!parsedInput) {
+      status.textContent = "Invalid format. Use: No-Year-Secret (example: 24-2023-JUG5).";
+      return;
+    }
+
+    status.textContent = "Searching data...";
+
+    try {
+      const rows = await loadSheetData();
+
+      const found = rows.find(row => {
+        const rowNo = normalizeKeyPart(row.No);
+        const rowYear = normalizeKeyPart(extractYear(row.Date));
+        const rowSecret = normalizeKeyPart(row.Secret);
+
+        return (
+          rowNo === normalizeKeyPart(parsedInput.no) &&
+          rowYear === normalizeKeyPart(parsedInput.year) &&
+          rowSecret === normalizeKeyPart(parsedInput.secret)
+        );
+      });
+
+      if (!found) {
+        status.textContent = "Data not found.";
+        return;
+      }
+
+      const certificateNumber = generateCertificateNumber(found.No, found.Date);
+
+      selectedCertificate = {
+        no: String(found.No || "").trim(),
+        date: String(found.Date || "").trim(),
+        title: String(found.Title || "").trim(),
+        secret: String(found.Secret || "").trim(),
+        certificateNumber
+      };
+
+      document.getElementById("certNumber").textContent = certificateNumber;
+      document.getElementById("certTitle").textContent = selectedCertificate.title || "-";
+      document.getElementById("certDate").textContent = selectedCertificate.date || "-";
+
+      downloadBtn.disabled = false;
+      status.textContent = "Certificate found. Ready to download.";
+    } catch (error) {
+      console.error(error);
+      status.textContent = "Failed to load CSV data.";
+    }
+  }
+
+  function safeFileName(text) {
+    return String(text || "certificate")
+      .replace(/[<>:"/\\|?*]+/g, "")
+      .replace(/\s+/g, "-")
+      .substring(0, 100);
+  }
+
+  async function downloadPDF() {
+    const status = document.getElementById("status");
+
+    if (!selectedCertificate) {
+      status.textContent = "No certificate selected.";
+      return;
+    }
+
+    status.textContent = "Generating PDF...";
+
+    const element = document.getElementById("certificate");
+    const filename = safeFileName(selectedCertificate.certificateNumber) + ".pdf";
+
+    const options = {
+      margin: 0,
+      filename: filename,
+      image: { type: "jpeg", quality: 1 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true
+      },
+      jsPDF: {
+        unit: "px",
+        format: [1123, 794],
+        orientation: "landscape"
+      }
+    };
+
+    try {
+      await html2pdf().set(options).from(element).save();
+      status.textContent = "PDF downloaded successfully.";
+    } catch (error) {
+      console.error(error);
+      status.textContent = "Failed to generate PDF.";
+    }
+  }
+</script>
+</body>
+</html>
