@@ -7,6 +7,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
   <style>
     * {
@@ -190,6 +191,31 @@
     .signer-name {
       font-weight: bold;
     }
+    
+    .qr-space {
+  height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin: 10px 0 6px;
+}
+
+#qrcode {
+  width: 96px;
+  height: 96px;
+  background: #fff;
+}
+
+#qrcode img,
+#qrcode canvas {
+  display: block;
+  width: 96px !important;
+  height: 96px !important;
+}
+
+.signer-name {
+  font-weight: bold;
+}
 
     @media (max-width: 768px) {
       body {
@@ -252,11 +278,13 @@
           </div>
 
           <div class="footer-right">
-            <div>Head of Translator &amp; Proofreading</div>
-            <div>Dian Translation</div>
-            <div class="signature-space"></div>
-            <div class="signer-name">Mochlisin</div>
-          </div>
+  <div>Certificate Verification</div>
+  <div>Scan QR Code</div>
+  <div class="qr-space">
+    <div id="qrcode"></div>
+  </div>
+  <div class="signer-name">Verified by Dian Translation</div>
+</div>
         </div>
       </div>
     </div>
@@ -268,7 +296,7 @@
   let selectedCertificate = null;
 
   async function loadSheetData() {
-    const response = await fetch(SHEET_CSV_URL);
+    const response = await fetch(SHEET_CSV_URL, { cache: "no-store" });
     if (!response.ok) {
       throw new Error("Failed to fetch CSV.");
     }
@@ -277,7 +305,9 @@
 
     const parsed = Papa.parse(csvText, {
       header: true,
-      skipEmptyLines: true
+      skipEmptyLines: true,
+      transformHeader: (header) => String(header || "").replace(/^\uFEFF/, "").trim(),
+      transform: (value) => String(value || "").replace(/^\uFEFF/, "").trim()
     });
 
     return parsed.data;
@@ -326,12 +356,6 @@
     return `${cleanNo}/C-DT/${romanMonth}/${year}`;
   }
 
-  function normalizeValue(value) {
-    return String(value || "")
-      .trim()
-      .toLowerCase();
-  }
-
   function normalizeKeyPart(value) {
     return String(value || "")
       .trim()
@@ -341,11 +365,6 @@
 
   function parseSearchInput(input) {
     const cleaned = String(input || "").trim();
-
-    // Accept:
-    // 24-2023-JUG5
-    // 25-2023-TY70
-    // and tolerate spaces around dashes
     const match = cleaned.match(/^([^-]+)\s*-\s*(\d{4})\s*-\s*([A-Za-z0-9]+)$/);
 
     if (!match) return null;
@@ -357,8 +376,32 @@
     };
   }
 
-  async function findCertificate() {
-    const input = document.getElementById("searchInput").value.trim();
+  function buildVerificationCode(no, dateStr, secret) {
+    const year = extractYear(dateStr);
+    return `${String(no).trim()}-${String(year).trim()}-${String(secret).trim()}`;
+  }
+
+function getVerificationUrl(code) {
+  return `${window.location.origin}${window.location.pathname}?c=${encodeURIComponent(code)}`;
+}
+
+  function renderQRCode(verificationCode) {
+    const qrContainer = document.getElementById("qrcode");
+    qrContainer.innerHTML = "";
+
+    const verificationUrl = getVerificationUrl(verificationCode);
+
+    new QRCode(qrContainer, {
+      text: verificationUrl,
+      width: 96,
+      height: 96,
+      correctLevel: QRCode.CorrectLevel.H
+    });
+  }
+
+  async function findCertificate(customInput = null) {
+    const inputElement = document.getElementById("searchInput");
+    const input = (customInput || inputElement.value).trim();
     const status = document.getElementById("status");
     const downloadBtn = document.getElementById("downloadBtn");
 
@@ -377,6 +420,7 @@
       return;
     }
 
+    inputElement.value = input.toUpperCase();
     status.textContent = "Searching data...";
 
     try {
@@ -395,23 +439,28 @@
       });
 
       if (!found) {
-        status.textContent = "Data not found.";
+        document.getElementById("qrcode").innerHTML = "";
+        status.textContent = "Certificate code not found. Please check the code again.";
         return;
       }
 
       const certificateNumber = generateCertificateNumber(found.No, found.Date);
+      const verificationCode = buildVerificationCode(found.No, found.Date, found.Secret);
 
       selectedCertificate = {
         no: String(found.No || "").trim(),
         date: String(found.Date || "").trim(),
         title: String(found.Title || "").trim(),
         secret: String(found.Secret || "").trim(),
-        certificateNumber
+        certificateNumber,
+        verificationCode
       };
 
       document.getElementById("certNumber").textContent = certificateNumber;
       document.getElementById("certTitle").textContent = selectedCertificate.title || "-";
       document.getElementById("certDate").textContent = selectedCertificate.date || "-";
+
+      renderQRCode(verificationCode);
 
       downloadBtn.disabled = false;
       status.textContent = "Certificate found. Ready to download.";
@@ -464,6 +513,26 @@
       status.textContent = "Failed to generate PDF.";
     }
   }
+
+  document.getElementById("searchInput").addEventListener("input", function () {
+    this.value = this.value.toUpperCase();
+  });
+
+  document.getElementById("searchInput").addEventListener("keypress", function (e) {
+    if (e.key === "Enter") {
+      findCertificate();
+    }
+  });
+
+  window.addEventListener("DOMContentLoaded", () => {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("c");
+
+    if (code) {
+      document.getElementById("searchInput").value = code.toUpperCase();
+      findCertificate(code);
+    }
+  });
 </script>
 </body>
 </html>
