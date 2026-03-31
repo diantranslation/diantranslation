@@ -101,27 +101,33 @@
       justify-content: center;
     }
 
-    .certificate {
-      width: 1123px;
-      min-height: 794px;
-      background: #fff;
-      position: relative;
-      padding: 52px 70px;
-      border: 12px solid #d7bf83;
-      box-shadow: 0 12px 35px rgba(0,0,0,0.12);
-      font-family: Georgia, "Times New Roman", serif;
-    }
-
-    .certificate::before {
-      content: "";
-      position: absolute;
-      top: 16px;
-      left: 16px;
-      right: 16px;
-      bottom: 16px;
-      border: 2px solid #d7bf83;
-      pointer-events: none;
-    }
+.certificate {
+  width: 210mm;
+  min-height: 297mm;
+  background: #fff;
+  position: relative;
+  padding: 18mm 18mm;
+  border: 3mm solid #d7bf83;
+  box-shadow: 0 12px 35px rgba(0,0,0,0.12);
+  font-family: Georgia, "Times New Roman", serif;
+  margin: 0 auto;
+  overflow: hidden;
+  page-break-inside: avoid;
+}
+.certificate::before {
+  content: "";
+  position: absolute;
+  top: 4mm;
+  left: 4mm;
+  right: 4mm;
+  bottom: 4mm;
+  border: 0.6mm solid #d7bf83;
+  pointer-events: none;
+}
+    #certificate,
+#certificate * {
+  page-break-inside: avoid !important;
+}
 
     .brand {
       text-align: center;
@@ -145,44 +151,32 @@
     }
 
     .cert-heading {
-      text-align: center;
-      font-size: 48px;
-      letter-spacing: 9px;
-      font-weight: bold;
-      margin: 20px 0 8px;
-    }
+  text-align: center;
+  font-size: 28pt;
+  letter-spacing: 4px;
+  font-weight: bold;
+  margin: 12mm 0 4mm;
+}
 
-    .cert-number {
-      text-align: center;
-      font-size: 22px;
-      margin-bottom: 34px;
-    }
+.cert-number {
+  text-align: center;
+  font-size: 14pt;
+  margin-bottom: 10mm;
+}
 
-    .body-text {
-      font-size: 24px;
-      line-height: 1.85;
-      text-align: justify;
-      margin-bottom: 18px;
-    }
+.body-text {
+  font-size: 14pt;
+  line-height: 1.8;
+  text-align: justify;
+  margin-bottom: 5mm;
+}
 
-    .title-text {
-      font-style: italic;
-      font-weight: bold;
-    }
-
-    .footer {
-      margin-top: 50px;
-      display: flex;
-      justify-content: space-between;
-      gap: 24px;
-    }
-
-    .footer-left,
-    .footer-right {
-      width: 46%;
-      font-size: 22px;
-      line-height: 1.8;
-    }
+.footer-left,
+.footer-right {
+  width: 46%;
+  font-size: 13pt;
+  line-height: 1.7;
+}
 
     .signature-space {
       height: 82px;
@@ -478,41 +472,48 @@ function getVerificationUrl(code) {
   }
 
   async function downloadPDF() {
-    const status = document.getElementById("status");
+  const status = document.getElementById("status");
 
-    if (!selectedCertificate) {
-      status.textContent = "No certificate selected.";
-      return;
-    }
-
-    status.textContent = "Generating PDF...";
-
-    const element = document.getElementById("certificate");
-    const filename = safeFileName(selectedCertificate.certificateNumber) + ".pdf";
-
-    const options = {
-      margin: 0,
-      filename: filename,
-      image: { type: "jpeg", quality: 1 },
-      html2canvas: {
-        scale: 2,
-        useCORS: true
-      },
-      jsPDF: {
-        unit: "px",
-        format: [794, 1123],
-        orientation: "portrait"
-      }
-    };
-
-    try {
-      await html2pdf().set(options).from(element).save();
-      status.textContent = "PDF downloaded successfully.";
-    } catch (error) {
-      console.error(error);
-      status.textContent = "Failed to generate PDF.";
-    }
+  if (!selectedCertificate) {
+    status.textContent = "No certificate selected.";
+    return;
   }
+
+  status.textContent = "Generating PDF...";
+
+  const element = document.getElementById("certificate");
+  const filename = safeFileName(selectedCertificate.certificateNumber) + ".pdf";
+
+  const options = {
+    margin: [0, 0, 0, 0],
+    filename: filename,
+    image: {
+      type: "jpeg",
+      quality: 1
+    },
+    html2canvas: {
+      scale: 2,
+      useCORS: true,
+      scrollY: 0
+    },
+    jsPDF: {
+      unit: "mm",
+      format: "a4",
+      orientation: "portrait"
+    },
+    pagebreak: {
+      mode: ["avoid-all"]
+    }
+  };
+
+  try {
+    await html2pdf().set(options).from(element).save();
+    status.textContent = "PDF downloaded successfully.";
+  } catch (error) {
+    console.error(error);
+    status.textContent = "Failed to generate PDF.";
+  }
+}
 
   document.getElementById("searchInput").addEventListener("input", function () {
     this.value = this.value.toUpperCase();
