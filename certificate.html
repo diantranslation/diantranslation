@@ -132,30 +132,62 @@
   page-break-inside: avoid !important;
 }
 
-    .brand {
-      text-align: center;
-      line-height: 1.45;
-      margin-bottom: 26px;
-    }
+.certificate-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 0 0 18px;
+  flex-wrap: wrap;
+}
 
-    .brand .name {
-      font-size: 26px;
-      font-weight: bold;
-      letter-spacing: 1px;
-    }
+.print-btn {
+  background: #444;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 20px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
 
-    .brand .sub {
-      font-size: 16px;
-    }
+.print-btn:disabled {
+  background: #a7a7a7;
+  cursor: not-allowed;
+}
 
-    .brand .contact {
-      font-size: 14px;
-      color: #444;
-    }
+  .brand {
+  text-align: center;
+  line-height: 1.45;
+  margin-bottom: 18px;
+}
+
+.brand-logo {
+  display: block;
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  margin: 0 auto 8px;
+}
+
+.brand .name {
+  font-size: 26px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.brand .sub {
+  font-size: 16px;
+}
+
+.brand .contact {
+  font-size: 14px;
+  color: #444;
+}
 
     .cert-heading {
   text-align: center;
-  font-size: 28pt;
+  font-size: 24pt;
   letter-spacing: 4px;
   font-weight: bold;
   margin: 8mm 0 3mm;
@@ -240,33 +272,64 @@
 .pdf-export-mode::before {
   display: none !important;
 }
+
+@media print {
+  body {
+    padding: 0;
+    background: #fff;
+  }
+
+  .panel,
+  .certificate-actions {
+    display: none !important;
+  }
+
+  .wrapper {
+    max-width: none;
+    margin: 0;
+  }
+
+  .certificate-wrap {
+    overflow: visible;
+    display: block;
+  }
+
+  .certificate {
+    width: 210mm !important;
+    height: 297mm !important;
+    margin: 0 auto;
+    box-shadow: none !important;
+    border: none !important;
+    transform: none !important;
+  }
+}
   </style>
 </head>
 <body>
   <div class="wrapper">
-    <div class="panel">
-      <h1>Proofreading Certificate</h1>
-      <p>
-        
-      </p>
+<div class="panel">
+  <h1>Proofreading Certificate</h1>
 
-      <div class="form-row">
-        <input type="text" id="searchInput" placeholder="Type the certificate ID, e.g., 22-2026-U9J0" />
-        <button class="search-btn" onclick="findCertificate()">Find Certificate</button>
-        <button class="download-btn" id="downloadBtn" onclick="downloadPDF()" disabled>Download PDF</button>
-      </div>
+  <div class="form-row">
+    <input type="text" id="searchInput" placeholder="Type the certificate ID, e.g., 22-2026-U9J0" />
+    <button class="search-btn" onclick="findCertificate()">Find Certificate</button>
+  </div>
 
-      <div class="status" id="status"></div>
-    </div>
+  <div class="status" id="status"></div>
+</div>
+
+<div class="certificate-actions">
+  <button class="download-btn" id="downloadBtn" onclick="downloadPDF()" disabled>Download PDF</button>
+  <button class="print-btn" id="printBtn" onclick="printCertificate()" disabled>Print</button>
+</div>
 
     <div class="certificate-wrap">
       <div class="certificate" id="certificate">
         <div class="brand">
+          <img class="brand-logo" src="logo.png" alt="Dian Translation Logo" />
           <div class="name">DIAN TRANSLATION</div>
           <div class="sub">Translation and Proofreading Services</div>
-          <div class="contact">www.diantranslation.com | info@diantranslation.com | 6285228001002</div>
-          <div class="contact"></div>
-          <div class="contact"></div>
+          <div class="contact">info@diantranslation.com | 6285228001002</div>
         </div>
 
         <div class="cert-heading">CERTIFICATE</div>
@@ -288,7 +351,7 @@
           </div>
 
           <div class="footer-right">
-  <div>Proofread by</div>
+  <div>Proofread and certified by</div>
   <div class="qr-space">
     <div id="qrcode"></div>
   </div>
@@ -413,9 +476,11 @@ function getVerificationUrl(code) {
     const input = (customInput || inputElement.value).trim();
     const status = document.getElementById("status");
     const downloadBtn = document.getElementById("downloadBtn");
+    const printBtn = document.getElementById("printBtn");
 
     selectedCertificate = null;
     downloadBtn.disabled = true;
+    printBtn.disabled = true;
 
     if (!input) {
       status.textContent = "Please enter No-Year-Secret.";
@@ -472,6 +537,7 @@ function getVerificationUrl(code) {
       renderQRCode(verificationCode);
 
       downloadBtn.disabled = false;
+      printBtn.disabled = false;
       status.textContent = "Certificate found. Ready to download.";
     } catch (error) {
       console.error(error);
@@ -531,6 +597,20 @@ async function downloadPDF() {
   } finally {
     document.body.classList.remove("pdf-exporting");
   }
+}
+
+  function printCertificate() {
+  if (!selectedCertificate) {
+    document.getElementById("status").textContent = "No certificate selected.";
+    return;
+  }
+
+  document.body.classList.add("print-mode");
+  window.print();
+
+  setTimeout(() => {
+    document.body.classList.remove("print-mode");
+  }, 500);
 }
 
   document.getElementById("searchInput").addEventListener("input", function () {
