@@ -6,8 +6,9 @@
   <title>Certificate Generator</title>
 
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
   <style>
     * {
@@ -103,16 +104,17 @@
 
 .certificate {
   width: 210mm;
-  min-height: 297mm;
+  height: 297mm;
+  box-sizing: border-box;
   background: #fff;
   position: relative;
-  padding: 18mm 18mm;
-  border: 3mm solid #d7bf83;
-  box-shadow: 0 12px 35px rgba(0,0,0,0.12);
+  padding: 16mm 16mm 14mm;
+  border: none;
+  box-shadow: none;
   font-family: Georgia, "Times New Roman", serif;
   margin: 0 auto;
   overflow: hidden;
-  page-break-inside: avoid;
+  page-break-inside: avoid !important;
 }
 .certificate::before {
   content: "";
@@ -123,6 +125,7 @@
   bottom: 4mm;
   border: 0.6mm solid #d7bf83;
   pointer-events: none;
+    display: none !important;
 }
     #certificate,
 #certificate * {
@@ -221,17 +224,13 @@
   font-weight: bold;
 }
 
-    @media (max-width: 768px) {
-      body {
-        padding: 12px;
-      }
-
-      .certificate {
-        transform: scale(0.55);
-        transform-origin: top center;
-        margin-bottom: -320px;
-      }
-    }
+@media (max-width: 768px) {
+  body:not(.pdf-exporting) .certificate {
+    transform: scale(0.55);
+    transform-origin: top center;
+    margin-bottom: -320px;
+  }
+}
 
     .pdf-export-mode {
   border: none !important;
@@ -248,11 +247,11 @@
     <div class="panel">
       <h1>Proofreading Certificate</h1>
       <p>
-        Input the certificate id give to you.
+        
       </p>
 
       <div class="form-row">
-        <input type="text" id="searchInput" placeholder="Example: 22-2026-U9J0" />
+        <input type="text" id="searchInput" placeholder="Type the certificate ID, e.g., 22-2026-U9J0" />
         <button class="search-btn" onclick="findCertificate()">Find Certificate</button>
         <button class="download-btn" id="downloadBtn" onclick="downloadPDF()" disabled>Download PDF</button>
       </div>
@@ -487,7 +486,7 @@ function getVerificationUrl(code) {
       .substring(0, 100);
   }
 
-  async function downloadPDF() {
+async function downloadPDF() {
   const status = document.getElementById("status");
 
   if (!selectedCertificate) {
@@ -500,40 +499,37 @@ function getVerificationUrl(code) {
   const element = document.getElementById("certificate");
   const filename = safeFileName(selectedCertificate.certificateNumber) + ".pdf";
 
-  // remove frame only during export
-  element.classList.add("pdf-export-mode");
-
-  const options = {
-    margin: [0, 0, 0, 0],
-    filename: filename,
-    image: {
-      type: "jpeg",
-      quality: 1
-    },
-    html2canvas: {
-      scale: 2,
-      useCORS: true,
-      scrollY: 0
-    },
-    jsPDF: {
-      unit: "mm",
-      format: "a4",
-      orientation: "portrait"
-    },
-    pagebreak: {
-      mode: ["avoid-all"]
-    }
-  };
+  document.body.classList.add("pdf-exporting");
 
   try {
-    await html2pdf().set(options).from(element).save();
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: "#ffffff",
+      scrollX: 0,
+      scrollY: 0
+    });
+
+    const imgData = canvas.toDataURL("image/jpeg", 1.0);
+
+    const pdf = new window.jspdf.jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4"
+    });
+
+    const pageWidth = 210;
+    const pageHeight = 297;
+
+    pdf.addImage(imgData, "JPEG", 0, 0, pageWidth, pageHeight);
+    pdf.save(filename);
+
     status.textContent = "PDF downloaded successfully.";
   } catch (error) {
     console.error(error);
     status.textContent = "Failed to generate PDF.";
   } finally {
-    // restore frame after export
-    element.classList.remove("pdf-export-mode");
+    document.body.classList.remove("pdf-exporting");
   }
 }
 
