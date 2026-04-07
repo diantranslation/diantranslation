@@ -168,17 +168,22 @@
   transform: scale(1.08);
 }
   .brand {
-  text-align: center;
-  line-height: 1.45;
+  display: flex;
+  align-items: center;
+  gap: 16px;
   margin-bottom: 18px;
 }
 
 .brand-logo {
-  display: block;
   width: 100px;
   height: 100px;
   object-fit: contain;
-  margin: 0 auto 8px;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.45;
 }
 
 .brand .name {
@@ -195,7 +200,6 @@
   font-size: 14px;
   color: #444;
 }
-
     .cert-heading {
   text-align: center;
   font-size: 24pt;
@@ -340,12 +344,14 @@
     <div class="certificate-wrap">
       <div class="certificate" id="certificate">
         <div class="brand">
-          <img class="brand-logo" src="logo.png" alt="Dian Translation Logo" />
-          <div class="name">DIAN TRANSLATION</div>
-          <div class="sub">Translation and Proofreading Services</div>
-          <div class="contact">info@diantranslation.com | 6285228001002</div>
-        </div>
+  <img class="brand-logo" src="logo.png" alt="Dian Translation Logo" />
 
+  <div class="brand-text">
+    <div class="name">DIAN TRANSLATION</div>
+    <div class="sub">Translation and Proofreading Services</div>
+    <div class="contact">info@diantranslation.com | 6285228001002</div>
+  </div>
+</div>
         <div class="cert-heading">CERTIFICATE</div>
         <div class="cert-number">No. <span id="certNumber">-</span></div>
 
