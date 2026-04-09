@@ -10,7 +10,7 @@
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0/lib/qr-code-styling.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
@@ -260,25 +260,19 @@
       font-weight: bold;
     }
     
-    .qr-space {
-  height: 110px;
+.qr-space {
+  height: 140px;
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  margin: 10px 0 6px;
+  margin: 5px 0 5px;
 }
 
 #qrcode {
-  width: 100px;
-  height: 100px;
+  width: 140px;
+  height: 140px;
   background: #fff;
-}
-
-#qrcode img,
-#qrcode canvas {
-  display: block;
-  width: 100px !important;
-  height: 100px !important;
+  margin-left: 0;
 }
 
 .signer-name {
@@ -554,19 +548,51 @@ function getVerificationUrl(code) {
   return `${window.location.origin}${window.location.pathname}?c=${encodeURIComponent(code)}`;
 }
 
-  function renderQRCode(verificationCode) {
-    const qrContainer = document.getElementById("qrcode");
-    qrContainer.innerHTML = "";
+let qrCode = null;
 
-    const verificationUrl = getVerificationUrl(verificationCode);
+function renderQRCode(verificationCode) {
+  const qrContainer = document.getElementById("qrcode");
+  qrContainer.innerHTML = "";
 
-    new QRCode(qrContainer, {
-      text: verificationUrl,
-      width: 96,
-      height: 96,
-      correctLevel: QRCode.CorrectLevel.H
-    });
-  }
+  const verificationUrl = getVerificationUrl(verificationCode);
+
+  qrCode = new QRCodeStyling({
+    width: 140,
+    height: 140,
+    data: verificationUrl,
+    margin: 1,
+
+    image: "logo.png",
+    imageOptions: {
+      crossOrigin: "anonymous",
+      margin: 3,
+      imageSize: 0.4
+    },
+
+    dotsOptions: {
+      color: "#000",
+      type: "classy-rounded" // 🔥 rounded dots
+    },
+
+    cornersSquareOptions: {
+      type: "extra-rounded"
+    },
+
+    cornersDotOptions: {
+      type: "dot"
+    },
+
+    backgroundOptions: {
+      color: "#ffffff"
+    },
+
+    qrOptions: {
+      errorCorrectionLevel: "H"
+    }
+  });
+
+  qrCode.append(qrContainer);
+}
 
   async function findCertificate(customInput = null) {
     const inputElement = document.getElementById("searchInput");
