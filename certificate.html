@@ -570,8 +570,15 @@ function renderQRCode(verificationCode) {
     },
 
     dotsOptions: {
-      color: "#000",
-      type: "classy-rounded" // 🔥 rounded dots
+      type: "classy-rounded",
+      gradient: {
+        type: "linear",
+        rotation: Math.PI / 4,
+        colorStops: [
+          { offset: 0, color: "#091413" },
+          { offset: 1, color: "#281C59" }
+        ]
+      }
     },
 
     cornersSquareOptions: {
