@@ -341,33 +341,51 @@
   }
 
 @media print {
-  body {
-    padding: 0;
-    background: #fff;
+  @page {
+    margin: 0; /* Removes browser-added headers/footers */
+    size: A4 portrait;
   }
 
-  .panel,
-  .certificate-actions {
+  html, body {
+    height: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden; /* Prevents Chrome from scrolling to a second page */
+    -webkit-print-color-adjust: exact; /* Ensures colors/logos render correctly */
+  }
+
+  /* Hide everything except the certificate container */
+  .panel, 
+  .certificate-actions, 
+  .footnote,
+  script {
     display: none !important;
   }
 
   .wrapper {
     max-width: none;
     margin: 0;
+    padding: 0;
+    width: 100%;
   }
 
   .certificate-wrap {
-    overflow: visible;
     display: block;
+    padding: 0;
+    margin: 0;
+    overflow: visible;
   }
 
   .certificate {
     width: 210mm !important;
     height: 297mm !important;
-    margin: 0 auto;
+    margin: 0 auto !important;
+    transform: none !important; /* Overrides mobile scaling */
     box-shadow: none !important;
     border: none !important;
-    transform: none !important;
+    position: relative;
+    page-break-inside: avoid;
+    page-break-after: avoid;
   }
 }
     .footnote {
@@ -633,36 +651,31 @@ function getVerificationUrl(code) {
 
 async function downloadPDF() {
   const status = document.getElementById("status");
-
-  if (!selectedCertificate) {
-    status.textContent = "No certificate selected.";
-    return;
-  }
+  if (!selectedCertificate) return;
 
   status.textContent = "Generating PDF...";
   const element = document.getElementById("certificate");
   const filename = safeFileName(selectedCertificate.certificateNumber) + ".pdf";
 
-  // Step 1: Add exporting class to strip mobile scaling/transforms
-  document.body.classList.add("pdf-exporting");
+  // REMOVED: document.body.classList.add("pdf-exporting"); 
 
   try {
     const canvas = await html2canvas(element, {
       scale: 2, 
       useCORS: true,
       backgroundColor: "#ffffff",
-      // Force the capture width to standard A4 (794px at 96dpi) 
-      // regardless of mobile screen width
-      width: 794,
-      height: 1123, 
+      width: 794,  // A4 Width at 96 DPI
+      height: 1123, // A4 Height at 96 DPI
       onclone: (clonedDoc) => {
         const clonedCert = clonedDoc.getElementById("certificate");
-        // Reset all mobile styles for the capture
+        // All resets happen here in the clone, so the user sees no glitch
         clonedCert.style.transform = "none";
         clonedCert.style.margin = "0";
         clonedCert.style.border = "none";
+        clonedCert.style.boxShadow = "none";
         clonedCert.style.width = "210mm";
         clonedCert.style.height = "297mm";
+        clonedCert.style.position = "static";
       }
     });
 
@@ -675,14 +688,11 @@ async function downloadPDF() {
 
     pdf.addImage(imgData, "JPEG", 0, 0, 210, 297);
     pdf.save(filename);
-
     status.textContent = "PDF downloaded successfully.";
   } catch (error) {
-    console.error(error);
     status.textContent = "Failed to generate PDF.";
   } finally {
-    // Step 2: Restore mobile view
-    document.body.classList.remove("pdf-exporting");
+    // REMOVED: document.body.classList.remove("pdf-exporting");
   }
 }
 
