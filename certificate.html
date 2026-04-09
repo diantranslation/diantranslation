@@ -242,7 +242,7 @@
 .footer-left,
 .footer-right {
   width: 46%;
-  font-size: 13pt;
+  font-size: 14pt;
   line-height: 1.7;
 }
 
@@ -559,7 +559,7 @@ function getVerificationUrl(code) {
     }
 
     inputElement.value = input.toUpperCase();
-    status.textContent = "Searching data...";
+    status.textContent = "Preparing your certificate...";
 
     try {
       const rows = await loadSheetData();
