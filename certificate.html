@@ -336,7 +336,12 @@ function renderQRCode(verificationCode) {
 
       document.getElementById("certNumber").textContent = certificateNumber;
       document.getElementById("certTitle").textContent = selectedCertificate.title || "-";
-      document.getElementById("certDate").textContent = selectedCertificate.date || "-";
+      const selectedDate = new Date(selectedCertificate.date);
+      document.getElementById("certDate").textContent = selectedDate.toLocaleDateString('en-US', { 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+      }) || "-";
 
       renderQRCode(verificationCode);
 
