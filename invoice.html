@@ -16,7 +16,7 @@
     body { margin: 0; padding: 24px; background: #E8F5BD; font-family: 'Montserrat', sans-serif; color: #222; }
     .wrapper { max-width: 790px; margin: 0 auto; }
     .panel { background: #C7EABB; border-radius: 20px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); margin-bottom: 24px; text-align: center; }
-    .panel h1 { margin: 0 0 14px; color: #fff; font-size: 24px; }
+    .panel h1 { margin: 0 0 14px; color: #fff; font-size: 26px; }
     
     .form-row { display: flex; gap: 8px; justify-content: center; max-width: 600px; margin: 0 auto; }
     .form-row input { flex: 1; padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(0, 0, 0, 0.15); }
@@ -27,41 +27,73 @@
     .print-btn { background: #36064d; color: #fff; border: none; border-radius: 12px; padding: 14px 20px; font-weight: 700; cursor: pointer; }
     .download-btn:disabled, .print-btn:disabled { background: #9fbba9; cursor: not-allowed; }
 
-    .certificate-wrap { display: flex; justify-content: center; overflow: hidden; }
-    .certificate { width: 210mm; min-height: 297mm; background: #fff; padding: 20mm; position: relative; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .inv-wrap { display: flex; justify-content: center; overflow: hidden; }
+    .inv { width: 210mm; min-height: 297mm; background: #fff; padding: 20mm; position: relative; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
 
     .invoice-top-bar { display: flex; margin-bottom: 30px; }
-    .invoice-info-box { background: #CCCCCC !important; padding: 15px; flex-grow: 1; font-size: 14px; }
-    .paid-stamp { background: #82C341 !important; color: white !important; padding: 0 40px; display: flex; align-items: center; font-size: 32px; font-weight: 800; }
+    .invoice-info-box { background: #fff !important; padding: 15px; flex-grow: 1; font-size: 12pt; }
+    .invoice-info-box .to { font-weight: 700; font-style: italic; }
+    .invoice-info-box .from { font-weight: 400; font-style: italic; }
+    .paid-stamp { background: #82C341 !important; color: white !important; padding: 0 40px; display: flex; align-items: center; font-size: 32px; font-weight: 800; border-radius: 5px;}
 
     .brand { display: flex; align-items: center; gap: 16px; margin: 20px 0; }
     .brand-logo { width: 80px; height: 80px; object-fit: contain; }
-    .brand-text .name { font-size: 22px; font-weight: bold; }
+    .brand-text .name { font-size: 26px; font-weight: bold; }
+    .brand .sub { font-size: 16px; }
+    .brand .contact { font-size: 14px; color: #444; }
+
+    .inv-heading { text-align: center; font-size: 24px; letter-spacing: 2px; font-weight: bold; margin: 10mm 0 1mm; } 
+    .inv-number { text-align: center; font-size: 12pt; margin-bottom: 10mm; }
     
-    .client-info { margin: 20px 0; font-size: 14px; line-height: 1.6; }
+    .client-info { margin: 5px 0; font-size: 14pt; line-height: 1.4; }
     .client-info .to { font-weight: 700; font-style: italic; }
+    .client-info .from { font-weight: 400; font-style: italic; }
 
     table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th { background: #CCCCCC !important; text-align: left; padding: 10px; font-size: 14px; }
-    td { padding: 10px; border-bottom: 1px solid #eee; font-size: 14px; }
+    th { background: #CCCCCC !important; text-align: left; padding: 10px; font-size: 12pt; }
+    td { padding: 10px; border-bottom: 1px solid #eee; font-size: 12pt; }
     .row-gray { background: #E6E6E6 !important; }
     .text-right { text-align: right; }
     .font-bold { font-weight: 700; }
 
-    .footer-note { margin-top: 30px; font-size: 12px; line-height: 1.5; }
-    .signature-area { display: flex; justify-content: flex-end; margin-top: 30px; text-align: right; }
-    #qrcode { margin-bottom: 10px; display: flex; justify-content: flex-end; }
+    .footer-note { margin-top: 30px; font-size: 12pt; line-height: 1.5; text-align: justify; }
+    .signature-area { display: flex; justify-content: flex-start; text-align: left; margin-top: 20px; }
+    .kanan { margin-left: 66%; }
+    .qr-space {
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin: 5px 0 5px;
+}
+
+#qrcode {
+  width: 140px;
+  height: 140px;
+  background: #fff;
+  margin-left: 0;
+}
+
     
-    @media (max-width: 768px) {
-      .certificate { transform: scale(0.35); transform-origin: top center; margin-bottom: -180mm; }
-    }
+@media (max-width: 768px) {
+  .inv { 
+    transform: scale(0.35); 
+    transform-origin: top center; 
+    margin-bottom: -190mm; /* Pulls up footer to prevent large whitespace */
+    flex-shrink: 0; 
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
 
     @media print {
       body { background: none; padding: 0; }
       * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
       .panel, .action-btns { display: none !important; }
-      .certificate-wrap { display: block; }
-      .certificate { box-shadow: none; border: none; width: 210mm; height: 297mm; margin: 0; transform: none !important; padding: 20mm; }
+      .inv-wrap { display: block; }
+      .inv { box-shadow: none; border: none; width: 210mm; height: 297mm; margin: 0; transform: none !important; padding: 20mm; }
       @page { size: A4 portrait; margin: 0; }
     }
   </style>
@@ -70,7 +102,7 @@
 
 <div class="wrapper">
   <div class="panel">
-    <h1>INVOICE SYSTEM</h1>
+    <h1>INVOICE</h1>
     <div class="form-row">
       <input type="text" id="searchInput" placeholder="Enter Invoice ID (e.g., PR-041026-01)" />
       <button class="search-btn" onclick="findInvoice()">Find</button>
@@ -83,17 +115,8 @@
     <button class="print-btn" id="printBtn" onclick="printInvoice()" disabled>Print Invoice</button>
   </div>
 
-  <div class="certificate-wrap">
-    <div class="certificate" id="invoiceArea">
-      <div class="invoice-top-bar">
-        <div class="invoice-info-box">
-          <div><strong>Invoice #<span id="invNum">--</span></strong></div>
-          <div>Invoice Date: <span id="invDate">--</span></div>
-          <div>Due Date: <span id="invDue">--</span></div>
-        </div>
-        <div class="paid-stamp">PAID</div>
-      </div>
-
+  <div class="inv-wrap">
+    <div class="inv" id="invoiceArea">
       <div class="brand">
         <img class="brand-logo" src="logo.png" alt="Logo" />
         <div class="brand-text">
@@ -102,13 +125,20 @@
           <div class="contact">info@diantranslation.com | 6285228001002</div>
         </div>
       </div>
+      
+        <div class="inv-heading">INVOICE</div>
+        <div class="inv-number"><strong>#<span id="invNum">PR-010126-01</span></strong></div>
 
-      <div class="client-info">
-        <div>Invoiced To</div>
-        <div class="to" id="clientTo">--</div>
-        <div id="clientFrom">--</div>
+      <div class="invoice-top-bar">
+        <div class="invoice-info-box">
+
+                  <div>To</div>
+        <div class="to">Mr/Mrs. <span id="clientTo">John Doe</span></div>
+        <div class="from" id="clientFrom">Universitas Indonesia</div>
+        </div>
+        <div class="paid-stamp">PAID</div>
       </div>
-
+      
       <table>
         <thead>
           <tr>
@@ -135,22 +165,22 @@
       </table>
 
       <div class="footer-note">
-        <p>The payment has already been confirmed.</p>
+        <p>The payment has already been confirmed. Thank you for trusting our translation and/or proofreading services.</p>
         <p><strong>Note:</strong> If you find any mistakes or errors in the translation/proofreading document, be sure to get in touch with us immediately for a better revision.</p>
-        <p>Thank you for trusting our translation and/or proofreading services.</p>
       </div>
 
       <div class="signature-area">
-        <div>
-          <div id="qrcode"></div>
-          <div>Batang, <span id="signDate">--</span></div>
-          <div>Certified by</div>
-          <div class="font-bold" style="margin-top:40px;">Dian Translation</div>
+        <div class="kanan">
+          <div>Batang, <span id="signDate">January 11, 2026</span></div>
+          <div class="qr-space" id="qrcode">QR-Code</div>
+          <div class="font-bold">Dian Translation</div>
         </div>
-      </div>
+        </div>
+
     </div>
   </div>
 </div>
+
 
 <script>
   const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQiueFU9gUeqMLgg3S0-d3xzIdoEYsQPoxgx_qCP0v0-EnPUuKPqIJYInkdwnCpkkBOaepQK5kGxLjs/pub?output=csv";
@@ -165,7 +195,7 @@
     const parts = dateStr.split('/');
     if(parts.length < 3) return dateStr;
     const date = new Date(parts[2], parts[0]-1, parts[1]);
-    return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: '2-digit' });
+    return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
   }
 
   function formatShortDateCode(dateStr) {
@@ -240,12 +270,11 @@
   function renderInvoice(invID, data) {
     const first = data[0];
     document.getElementById("invNum").textContent = invID;
-    document.getElementById("invDate").textContent = formatDateLong(first.DATE);
+  
     
     const dateParts = first.DATE.split('/');
     const due = new Date(dateParts[2], dateParts[0]-1, dateParts[1]);
     due.setDate(due.getDate() + 2);
-    document.getElementById("invDue").textContent = due.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: '2-digit' });
     document.getElementById("signDate").textContent = formatDateLong(first.DATE);
 
     document.getElementById("clientTo").textContent = first.TO;
@@ -281,12 +310,44 @@
     const qrContainer = document.getElementById("qrcode");
     qrContainer.innerHTML = "";
     new QRCodeStyling({
-      width: 120, height: 120,
+      width: 140, height: 140, margin: 1,
       // URL encoded without hashtag for better cross-browser compatibility
       data: `${window.location.origin}${window.location.pathname}?id=${encodeURIComponent(invID)}`,
-      dotsOptions: { color: "#281C59", type: "rounded" },
-      backgroundOptions: { color: "#ffffff" },
-      qrOptions: { errorCorrectionLevel: "H" }
+   
+    image: "logo.png",
+    imageOptions: {
+      crossOrigin: "anonymous",
+      margin: 3,
+      imageSize: 0.4
+    },
+
+    dotsOptions: {
+      type: "classy-rounded",
+      gradient: {
+        type: "linear",
+        rotation: Math.PI / 4,
+        colorStops: [
+          { offset: 0, color: "#091413" },
+          { offset: 1, color: "#281C59" }
+        ]
+      }
+    },
+
+    cornersSquareOptions: {
+      type: "extra-rounded"
+    },
+
+    cornersDotOptions: {
+      type: "dot"
+    },
+
+    backgroundOptions: {
+      color: "#ffffff"
+    },
+
+    qrOptions: {
+      errorCorrectionLevel: "H"
+    }
     }).append(qrContainer);
   }
 
@@ -294,14 +355,47 @@
     window.print();
   }
 
-  async function downloadPDF() {
-    const element = document.getElementById("invoiceArea");
-    const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+async function downloadPDF() {
+  const status = document.getElementById("status");
+  const element = document.getElementById("invoiceArea");
+  status.textContent = "Generating high-quality PDF...";
+
+  try {
+    const canvas = await html2canvas(element, {
+      scale: 2, // Increases resolution
+      useCORS: true,
+      backgroundColor: "#ffffff",
+      width: 794,  // A4 Width at 96 DPI
+      height: 1123, // A4 Height at 96 DPI
+      onclone: (clonedDoc) => {
+        const clonedInv = clonedDoc.getElementById("invoiceArea");
+        // Reset all styles in the clone to standard A4 for the capture
+        clonedInv.style.transform = "none";
+        clonedInv.style.margin = "0";
+        clonedInv.style.border = "none";
+        clonedInv.style.boxShadow = "none";
+        clonedInv.style.width = "210mm";
+        clonedInv.style.height = "297mm";
+        clonedInv.style.position = "static";
+        clonedInv.style.display = "block";
+      }
+    });
+
     const imgData = canvas.toDataURL("image/jpeg", 1.0);
-    const pdf = new jspdf.jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+    const pdf = new jspdf.jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4"
+    });
+
     pdf.addImage(imgData, "JPEG", 0, 0, 210, 297);
     pdf.save(`Invoice_${document.getElementById("invNum").textContent}.pdf`);
+    status.textContent = "Download complete.";
+  } catch (e) {
+    console.error(e);
+    status.textContent = "Error generating PDF.";
   }
+}
 
   // Auto-Load from URL
   window.addEventListener("DOMContentLoaded", () => {
