@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/png" href="logo.png">
-  <title>Invoice - Dian Translation</title>
+  <title>Invoice by Dian Translation</title>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -20,25 +20,26 @@
     
     .form-row { display: flex; gap: 8px; justify-content: center; max-width: 600px; margin: 0 auto; }
     .form-row input { flex: 1; padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(0, 0, 0, 0.15); }
-    
+    .form-row input:focus { outline: none; border-color: #1f7aec; box-shadow: 0 0 0 3px rgba(31, 122, 236, 0.12); }
     .search-btn { padding: 12px 24px; background: #76d2db; color: #fff; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; }
     .action-btns { display: flex; justify-content: center; gap: 12px; margin-bottom: 20px; }
     .download-btn { background: #da4948; color: #fff; border: none; border-radius: 12px; padding: 14px 20px; font-weight: 700; cursor: pointer; }
     .print-btn { background: #36064d; color: #fff; border: none; border-radius: 12px; padding: 14px 20px; font-weight: 700; cursor: pointer; }
     .download-btn:disabled, .print-btn:disabled { background: #9fbba9; cursor: not-allowed; }
+    .print-btn:hover, .download-btn:hover, .search-btn:hover { transform: scale(1.08); }
 
     .inv-wrap { display: flex; justify-content: center; overflow: hidden; }
-    .inv { width: 210mm; min-height: 297mm; background: #fff; padding: 20mm; position: relative; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .inv { width: 210mm; min-height: 297mm; background: #fff; padding: 25mm 25mm 16mm; position: relative; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
 
-    .invoice-top-bar { display: flex; margin-bottom: 30px; }
+    .invoice-top-bar { display: flex; margin-bottom: 20px; }
     .invoice-info-box { background: #fff !important; padding: 15px; flex-grow: 1; font-size: 12pt; }
-    .invoice-info-box .to { font-weight: 700; font-style: italic; }
+    .invoice-info-box .to { font-weight: 700; font-style: italic; margin-top: 5px; margin-bottom: 5px;}
     .invoice-info-box .from { font-weight: 400; font-style: italic; }
-    .paid-stamp { background: #82C341 !important; color: white !important; padding: 0 40px; display: flex; align-items: center; font-size: 32px; font-weight: 800; border-radius: 5px;}
-
-    .brand { display: flex; align-items: center; gap: 16px; margin: 20px 0; }
+    .paid-stamp { background: #82C341 !important; height: 70px; margin-top: 13px; color: white !important; padding: 0 40px; display: flex; align-items: center; font-size: 32px; font-weight: bold; border-radius: 5px;}
+    .brand { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; }
     .brand-logo { width: 100px; height: 100px; object-fit: contain; }
-    .brand-text .name { font-size: 26px; font-weight: bold; }
+    .brand-text { display: flex; flex-direction: column; line-height: 1.45; }
+    .brand-text .name { font-size: 26px; font-weight: bold; letter-spacing: 0px; line-height: 1.2; }
     .brand .sub { font-size: 16px; }
     .brand .contact { font-size: 14px; color: #444; }
 
@@ -46,56 +47,81 @@
     .inv-number { text-align: center; font-size: 12pt; margin-bottom: 10mm; }
     
     .client-info { margin: 5px 0; font-size: 14pt; line-height: 1.4; }
-    .client-info .to { font-weight: 700; font-style: italic; }
-    .client-info .from { font-weight: 400; font-style: italic; }
+    .client-info .to { font-weight: 700; font-style: italic; margin: 10px 0; }
+    .client-info .from { font-weight: 400; font-style: italic; margin: 10px 0; }
 
     table { width: 100%; border-collapse: collapse; margin-top: 20px; }
     th { background: #CCCCCC !important; text-align: left; padding: 10px; font-size: 12pt; }
     td { padding: 10px; border-bottom: 1px solid #eee; font-size: 12pt; }
     .row-gray { background: #E6E6E6 !important; }
+    .row-white { background: #fffff2 !important; }
     .text-right { text-align: right; }
-    .font-bold { font-weight: 700; }
 
-    .footer-note { margin-top: 30px; font-size: 12pt; line-height: 1.5; text-align: justify; }
+    .footnote { margin-top: 20px; font-size: 12pt; line-height: 1.5; text-align: justify; }
     .signature-area { display: flex; justify-content: flex-start; text-align: left; margin-top: 20px; }
+    .signer-name, .total { font-weight: bold; }
     .kanan { margin-left: 66%; }
-    .qr-space {
-  height: 140px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  margin: 5px 0 5px;
-}
+    .qr-space { height: 140px; display: flex; align-items: center; justify-content: flex-start; margin: 5px 0 5px; }
+    #qrcode { width: 140px; height: 140px; background: #fff; margin-left: 0; }
 
-#qrcode {
-  width: 140px;
-  height: 140px;
-  background: #fff;
-  margin-left: 0;
-}
+  @media (max-width: 768px) { body { padding: 16px; } .panel h1 { font-size: 22px; } .inv-wrap { width: 100%; max-width: 100%; margin: 0 auto; display: flex; justify-content: center; overflow: hidden; } body:not(.pdf-exporting) .inv { transform: scale(0.35); transform-origin: top center; flex-shrink: 0; margin-bottom: -190mm; border: 1px solid #ddd; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); left: 0; right: 0; margin-left: auto; margin-right: auto; } }
+@media print {
+  /* Reset background and padding for the print canvas */
+  html, body { 
+    background: none !important; 
+    padding: 0 !important; 
+    margin: 0 !important;
+    height: auto !important; /* Allows the body to grow with content */
+    overflow: visible !important; /* Prevents clipping */
+  }
 
-    
-@media (max-width: 768px) {
+  /* Force background colors (like the grey table header and green PAID stamp) */
+  * { 
+    -webkit-print-color-adjust: exact !important; 
+    print-color-adjust: exact !important; 
+  }
+
+  /* Hide UI elements that shouldn't be on the paper */
+  .panel, .action-btns, .footer { 
+    display: none !important; 
+  }
+
+  /* Ensure the outer wrapper doesn't restrict height */
+  .wrapper {
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Allow the invoice container to take up full space */
+  .inv-wrap { 
+    display: block !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* The actual invoice box */
   .inv { 
-    transform: scale(0.35); 
-    transform-origin: top center; 
-    margin-bottom: -190mm; /* Pulls up footer to prevent large whitespace */
-    flex-shrink: 0; 
-    left: 0;
-    right: 0;
-    margin-left: auto;
-    margin-right: auto;
+    box-shadow: none !important; 
+    border: none !important; 
+    width: 210mm !important; 
+    height: 297mm !important; 
+    margin: 0 auto !important; 
+    transform: none !important; 
+    padding: 25mm !important; 
+    page-break-inside: avoid !important;
+  }
+
+  /* Remove browser-added headers and footers (date, URL, etc.) */
+  @page { 
+    size: A4 portrait; 
+    margin: 0; 
   }
 }
-
-    @media print {
-      body { background: none; padding: 0; }
-      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-      .panel, .action-btns { display: none !important; }
-      .inv-wrap { display: block; }
-      .inv { box-shadow: none; border: none; width: 210mm; height: 297mm; margin: 0; transform: none !important; padding: 20mm; }
-      @page { size: A4 portrait; margin: 0; }
-    }
+    /* Footer */
+.footer { font-size: 10px; text-align: center; color: #BFA28C; }
+.footer a { text-decoration: none; }
   </style>
 </head>
 <body>
@@ -127,7 +153,7 @@
       </div>
       
         <div class="inv-heading">INVOICE</div>
-        <div class="inv-number"><strong>#<span id="invNum">PR-010126-01</span></strong></div>
+        <div class="inv-number">#<span id="invNum">PR-010126-01</span></div>
 
       <div class="invoice-top-bar">
         <div class="invoice-info-box">
@@ -153,18 +179,18 @@
             <td colspan="2" class="text-right">Subtotal</td>
             <td class="text-right" id="sumSubtotal">Rp0.00</td>
           </tr>
-          <tr class="row-gray">
+          <tr class="row-white">
             <td colspan="2" class="text-right">Discount</td>
             <td class="text-right" id="sumDiscount">-</td>
           </tr>
           <tr class="row-gray">
-            <td colspan="2" class="text-right font-bold">Total</td>
-            <td class="text-right font-bold" id="sumTotal">Rp0.00</td>
+            <td colspan="2" class="text-right total">Total</td>
+            <td class="text-right total" id="sumTotal">Rp0.00</td>
           </tr>
         </tfoot>
       </table>
 
-      <div class="footer-note">
+      <div class="footnote">
         <p>The payment has already been confirmed. Thank you for trusting our translation and/or proofreading services.</p>
         <p><strong>Note:</strong> If you find any mistakes or errors in the translation/proofreading document, be sure to get in touch with us immediately for a better revision.</p>
       </div>
@@ -173,12 +199,13 @@
         <div class="kanan">
           <div>Batang, <span id="signDate">January 11, 2026</span></div>
           <div class="qr-space" id="qrcode">QR-Code</div>
-          <div class="font-bold">Dian Translation</div>
+          <div class="signer-name">Dian Translation</div>
         </div>
-        </div>
+      </div>
 
     </div>
   </div>
+   <p class="footer">Invoice v.1.0 (April 8, 2026). Managed by <a href="https://diantranslation.com">Dian Translation.</a></p>
 </div>
 
 
