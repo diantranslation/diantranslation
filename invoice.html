@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="logo.png">
+  <title>Invoice - Dian Translation</title>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0/lib/qr-code-styling.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 24px; background: #E8F5BD; font-family: 'Montserrat', sans-serif; color: #222; }
+    .wrapper { max-width: 790px; margin: 0 auto; }
+    .panel { background: #C7EABB; border-radius: 20px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); margin-bottom: 24px; text-align: center; }
+    .panel h1 { margin: 0 0 14px; color: #fff; font-size: 24px; }
+    
+    .form-row { display: flex; gap: 8px; justify-content: center; max-width: 600px; margin: 0 auto; }
+    .form-row input { flex: 1; padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(0, 0, 0, 0.15); }
+    
+    .search-btn { padding: 12px 24px; background: #76d2db; color: #fff; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; }
+    .action-btns { display: flex; justify-content: center; gap: 12px; margin-bottom: 20px; }
+    .download-btn { background: #da4948; color: #fff; border: none; border-radius: 12px; padding: 14px 20px; font-weight: 700; cursor: pointer; }
+    .print-btn { background: #36064d; color: #fff; border: none; border-radius: 12px; padding: 14px 20px; font-weight: 700; cursor: pointer; }
+    .download-btn:disabled, .print-btn:disabled { background: #9fbba9; cursor: not-allowed; }
+
+    .certificate-wrap { display: flex; justify-content: center; overflow: hidden; }
+    .certificate { width: 210mm; min-height: 297mm; background: #fff; padding: 20mm; position: relative; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+
+    .invoice-top-bar { display: flex; margin-bottom: 30px; }
+    .invoice-info-box { background: #CCCCCC !important; padding: 15px; flex-grow: 1; font-size: 14px; }
+    .paid-stamp { background: #82C341 !important; color: white !important; padding: 0 40px; display: flex; align-items: center; font-size: 32px; font-weight: 800; }
+
+    .brand { display: flex; align-items: center; gap: 16px; margin: 20px 0; }
+    .brand-logo { width: 80px; height: 80px; object-fit: contain; }
+    .brand-text .name { font-size: 22px; font-weight: bold; }
+    
+    .client-info { margin: 20px 0; font-size: 14px; line-height: 1.6; }
+    .client-info .to { font-weight: 700; font-style: italic; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th { background: #CCCCCC !important; text-align: left; padding: 10px; font-size: 14px; }
+    td { padding: 10px; border-bottom: 1px solid #eee; font-size: 14px; }
+    .row-gray { background: #E6E6E6 !important; }
+    .text-right { text-align: right; }
+    .font-bold { font-weight: 700; }
+
+    .footer-note { margin-top: 30px; font-size: 12px; line-height: 1.5; }
+    .signature-area { display: flex; justify-content: flex-end; margin-top: 30px; text-align: right; }
+    #qrcode { margin-bottom: 10px; display: flex; justify-content: flex-end; }
+    
+    @media (max-width: 768px) {
+      .certificate { transform: scale(0.35); transform-origin: top center; margin-bottom: -180mm; }
+    }
+
+    @media print {
+      body { background: none; padding: 0; }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      .panel, .action-btns { display: none !important; }
+      .certificate-wrap { display: block; }
+      .certificate { box-shadow: none; border: none; width: 210mm; height: 297mm; margin: 0; transform: none !important; padding: 20mm; }
+      @page { size: A4 portrait; margin: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrapper">
+  <div class="panel">
+    <h1>INVOICE SYSTEM</h1>
+    <div class="form-row">
+      <input type="text" id="searchInput" placeholder="Enter Invoice ID (e.g., PR-041026-01)" />
+      <button class="search-btn" onclick="findInvoice()">Find</button>
+    </div>
+    <div id="status" style="color: white; margin-top: 10px;"></div>
+  </div>
+
+  <div class="action-btns">
+    <button class="download-btn" id="downloadBtn" onclick="downloadPDF()" disabled>Download PDF</button>
+    <button class="print-btn" id="printBtn" onclick="printInvoice()" disabled>Print Invoice</button>
+  </div>
+
+  <div class="certificate-wrap">
+    <div class="certificate" id="invoiceArea">
+      <div class="invoice-top-bar">
+        <div class="invoice-info-box">
+          <div><strong>Invoice #<span id="invNum">--</span></strong></div>
+          <div>Invoice Date: <span id="invDate">--</span></div>
+          <div>Due Date: <span id="invDue">--</span></div>
+        </div>
+        <div class="paid-stamp">PAID</div>
+      </div>
+
+      <div class="brand">
+        <img class="brand-logo" src="logo.png" alt="Logo" />
+        <div class="brand-text">
+          <div class="name">DIAN TRANSLATION</div>
+          <div class="sub">Translation and Proofreading Services</div>
+          <div class="contact">info@diantranslation.com | 6285228001002</div>
+        </div>
+      </div>
+
+      <div class="client-info">
+        <div>Invoiced To</div>
+        <div class="to" id="clientTo">--</div>
+        <div id="clientFrom">--</div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Services</th>
+            <th class="text-right">Qty</th>
+            <th class="text-right">Payment</th>
+          </tr>
+        </thead>
+        <tbody id="invoiceItems"></tbody>
+        <tfoot>
+          <tr class="row-gray">
+            <td colspan="2" class="text-right">Subtotal</td>
+            <td class="text-right" id="sumSubtotal">Rp0.00</td>
+          </tr>
+          <tr class="row-gray">
+            <td colspan="2" class="text-right">Discount</td>
+            <td class="text-right" id="sumDiscount">-</td>
+          </tr>
+          <tr class="row-gray">
+            <td colspan="2" class="text-right font-bold">Total</td>
+            <td class="text-right font-bold" id="sumTotal">Rp0.00</td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <div class="footer-note">
+        <p>The payment has already been confirmed.</p>
+        <p><strong>Note:</strong> If you find any mistakes or errors in the translation/proofreading document, be sure to get in touch with us immediately for a better revision.</p>
+        <p>Thank you for trusting our translation and/or proofreading services.</p>
+      </div>
+
+      <div class="signature-area">
+        <div>
+          <div id="qrcode"></div>
+          <div>Batang, <span id="signDate">--</span></div>
+          <div>Certified by</div>
+          <div class="font-bold" style="margin-top:40px;">Dian Translation</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQiueFU9gUeqMLgg3S0-d3xzIdoEYsQPoxgx_qCP0v0-EnPUuKPqIJYInkdwnCpkkBOaepQK5kGxLjs/pub?output=csv";
+
+  const SERVICE_MAP = {
+    "1": { label: "Proofreading (English)", code: "PR" },
+    "2": { label: "Translation (Bahasa Indonesia to English)", code: "TIN" },
+    "3": { label: "Translation (English to Bahasa Indonesia)", code: "TEN" }
+  };
+
+  function formatDateLong(dateStr) {
+    const parts = dateStr.split('/');
+    if(parts.length < 3) return dateStr;
+    const date = new Date(parts[2], parts[0]-1, parts[1]);
+    return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: '2-digit' });
+  }
+
+  function formatShortDateCode(dateStr) {
+    const parts = dateStr.split('/');
+    if(parts.length < 3) return "000000";
+    const m = parts[0].padStart(2, '0');
+    const d = parts[1].padStart(2, '0');
+    const y = parts[2].slice(-2);
+    return `${m}${d}${y}`;
+  }
+
+  function formatCurrency(num) {
+    return "Rp" + parseFloat(num).toLocaleString('id-ID', { minimumFractionDigits: 2 });
+  }
+
+  async function findInvoice(manualInput = null) {
+    const searchField = document.getElementById("searchInput");
+    // Strip hashtags from the search input for consistency
+    let search = (manualInput || searchField.value).trim().toUpperCase().replace(/^#/, '');
+    const status = document.getElementById("status");
+    
+    if(!search) return;
+    
+    searchField.value = search;
+    status.textContent = "Searching for invoice data...";
+    
+    try {
+      const resp = await fetch(SHEET_URL + "&cache_bust=" + Date.now());
+      const csv = await resp.text();
+      const rows = Papa.parse(csv, { header: true, skipEmptyLines: true }).data;
+
+      const invoices = {};
+      rows.forEach(row => {
+        const groupKey = `${row.ID}_${row.DATE}`; 
+        if (!invoices[groupKey]) {
+          invoices[groupKey] = { items: [], idNum: row.ID, date: row.DATE };
+        }
+        invoices[groupKey].items.push(row);
+      });
+
+      let foundData = null;
+      let foundFullID = "";
+
+      for (let key in invoices) {
+        const firstItem = invoices[key].items[0];
+        const srv = SERVICE_MAP[firstItem.SERVICES] || { code: "UNK" };
+        const dateCode = formatShortDateCode(firstItem.DATE);
+        // Generated ID no longer includes a hashtag
+        const generatedID = `${srv.code}-${dateCode}-${String(firstItem.ID).padStart(2, '0')}`;
+        
+        if (generatedID === search) {
+          foundData = invoices[key].items;
+          foundFullID = generatedID;
+          break;
+        }
+      }
+
+      if(!foundData) {
+        status.textContent = "Invoice ID not found.";
+        return;
+      }
+
+      renderInvoice(foundFullID, foundData);
+      document.getElementById("downloadBtn").disabled = false;
+      document.getElementById("printBtn").disabled = false;
+      status.textContent = "Invoice ready.";
+    } catch (e) {
+      status.textContent = "Error loading data.";
+    }
+  }
+
+  function renderInvoice(invID, data) {
+    const first = data[0];
+    document.getElementById("invNum").textContent = invID;
+    document.getElementById("invDate").textContent = formatDateLong(first.DATE);
+    
+    const dateParts = first.DATE.split('/');
+    const due = new Date(dateParts[2], dateParts[0]-1, dateParts[1]);
+    due.setDate(due.getDate() + 2);
+    document.getElementById("invDue").textContent = due.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: '2-digit' });
+    document.getElementById("signDate").textContent = formatDateLong(first.DATE);
+
+    document.getElementById("clientTo").textContent = first.TO;
+    document.getElementById("clientFrom").textContent = first.FROM;
+
+    const tbody = document.getElementById("invoiceItems");
+    tbody.innerHTML = "";
+    
+    let subtotal = 0;
+    let discount = 0;
+
+    data.forEach(row => {
+      const srvName = SERVICE_MAP[row.SERVICES]?.label || "Service";
+      const rowSub = parseFloat(row.SUBTOTAL.replace(/[^\d.-]/g, '')) || 0;
+      const rowDisc = parseFloat(row.DISCOUNT.replace(/[^\d.-]/g, '')) || 0;
+      
+      subtotal += rowSub;
+      discount += rowDisc;
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td class="font-bold">${srvName}</td>
+        <td class="text-right">${row.QTY} words</td>
+        <td class="text-right">${formatCurrency(rowSub)}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById("sumSubtotal").textContent = formatCurrency(subtotal);
+    document.getElementById("sumDiscount").textContent = discount > 0 ? `-${formatCurrency(discount)}` : "-";
+    document.getElementById("sumTotal").textContent = formatCurrency(subtotal - discount);
+
+    const qrContainer = document.getElementById("qrcode");
+    qrContainer.innerHTML = "";
+    new QRCodeStyling({
+      width: 120, height: 120,
+      // URL encoded without hashtag for better cross-browser compatibility
+      data: `${window.location.origin}${window.location.pathname}?id=${encodeURIComponent(invID)}`,
+      dotsOptions: { color: "#281C59", type: "rounded" },
+      backgroundOptions: { color: "#ffffff" },
+      qrOptions: { errorCorrectionLevel: "H" }
+    }).append(qrContainer);
+  }
+
+  function printInvoice() {
+    window.print();
+  }
+
+  async function downloadPDF() {
+    const element = document.getElementById("invoiceArea");
+    const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+    const imgData = canvas.toDataURL("image/jpeg", 1.0);
+    const pdf = new jspdf.jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+    pdf.addImage(imgData, "JPEG", 0, 0, 210, 297);
+    pdf.save(`Invoice_${document.getElementById("invNum").textContent}.pdf`);
+  }
+
+  // Auto-Load from URL
+  window.addEventListener("DOMContentLoaded", () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const idParam = urlParams.get('id');
+    
+    if (idParam) {
+      // Decode and strip any potential hashtag for clean matching
+      const cleanID = decodeURIComponent(idParam).trim().replace(/^#/, '');
+      findInvoice(cleanID);
+    }
+  });
+
+  document.getElementById("searchInput").addEventListener("keypress", (e) => {
+    if (e.key === "Enter") findInvoice();
+  });
+</script>
+</body>
+</html>
