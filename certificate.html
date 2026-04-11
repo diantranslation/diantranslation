@@ -14,402 +14,80 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+ /* Global Styles */
+* { box-sizing: border-box; }
+body { margin: 0; padding: 24px; background: #E8F5BD; font-family: 'Montserrat', sans-serif; color: #222; }
+/* Wrapper */
+.wrapper { max-width: 790px; margin: 0 auto; }
+/* Panel */
+.panel { background: #C7EABB; border-radius: 20px; padding: 24px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); margin-bottom: 24px; }
+.panel h1 { margin: 0 0 14px; text-align: center; font-size: 26px; color: #fff; }
+/* Form Row */
+.form-row { display: flex; gap: 8px; justify-content: center; max-width: 600px; margin: 0 auto; }
+.form-row input { flex: 1; padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(0, 0, 0, 0.15); }
+.form-row input:focus { outline: none; border-color: #1f7aec; box-shadow: 0 0 0 3px rgba(31, 122, 236, 0.12); }
+.search-btn { padding: 12px 24px; background: #76d2db; color: #fff; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; }
+.action-btns { display: flex; justify-content: center; gap: 12px; margin-bottom: 20px; }
+.download-btn { background: #da4948; color: #fff; border: none; border-radius: 12px; padding: 14px 20px; font-weight: 700; cursor: pointer; }
+.print-btn { background: #36064d; color: #fff; border: none; border-radius: 12px; padding: 14px 20px; font-weight: 700; cursor: pointer; }
+.download-btn:disabled, .print-btn:disabled { background: #9fbba9; cursor: not-allowed; }
+.print-btn:hover, .download-btn:hover, .search-btn:hover { transform: scale(1.08); }
+/* Status */
 
-    body {
-      margin: 0;
-      padding: 24px;
-      background: #E8F5BD;
-      font-family: 'Montserrat', sans-serif;
-      color: #222;
-    }
+/* Certificate */
+.certificate-wrap { overflow-x: auto; display: flex; justify-content: center; }
+.certificate { width: 210mm; height: 297mm; box-sizing: border-box; background: #fff; position: relative; padding: 25mm 25mm 16mm; border: none; box-shadow: none; font-family: "Montserrat", Times New Roman, Arial, sans-serif; margin: 0 auto; overflow: hidden; }
+.certificate::before { content: ""; position: absolute; top: 4mm; left: 4mm; right: 4mm; bottom: 4mm; border: 0.6mm solid #d7bf83; pointer-events: none; display: none !important; }
+#certificate, #certificate * { page-break-inside: avoid !important; }
+.certificate-actions { display: flex; justify-content: center; gap: 12px; margin: 0 0 18px; flex-wrap: wrap; }
 
-    .wrapper {
-      max-width: 790px;
-      margin: 0 auto;
-    }
+/* Brand */
+.brand { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; }
+.brand-logo { width: 100px; height: 100px; object-fit: contain; }
+.brand-text { display: flex; flex-direction: column; line-height: 1.45; }
+.brand-text .name { font-size: 26px; font-weight: bold; letter-spacing: 0px; line-height: 1.2; }
+.brand .sub { font-size: 16px; }
+.brand .contact { font-size: 14px; color: #444; }
 
-    .panel {
-      background: #C7EABB;
-      border-radius: 20px;
-      padding: 24px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-      margin-bottom: 24px;
-    }
+/* Certificate Heading */
+.cert-heading { text-align: center; font-size: 24px; letter-spacing: 2px; font-weight: bold; margin: 10mm 0 1mm; } 
+.cert-number { text-align: center; font-size: 12pt; margin-bottom: 10mm; }
+.body-text { font-size: 12pt; line-height: 1.9; text-align: justify; margin-bottom: 5mm; word-break: break-word; }
+.title-text { font-style: italic; font-weight: 700; }
+#certTitle { font-style: italic; font-weight: 700; }
 
-    .panel h1 {
-      margin: 0 0 14px;
-      text-align: center;
-      font-size: 26px;
-      color: #fff;
-    }
+/* Signature */
+.signer-name { font-weight: bold; }
+.signature-area { display: flex; justify-content: flex-start; text-align: left; margin-top: 20px; }
+.kanan { margin-left: 66%; }
 
-.form-row {
-  display: flex;
-  flex-wrap: nowrap; /* Forces search bar to stay on one line */
-  gap: 8px;
-  justify-content: center;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.form-row input {
-  flex: 1; /* Input takes up remaining space */
-  min-width: 0; /* Prevents input from pushing button off-screen */
-  padding: 12px 16px;
-  border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.15); /* hairline look */
-}
-    .form-row input:focus {
-  outline: none;
-  border-color: #1f7aec;
-  box-shadow: 0 0 0 3px rgba(31, 122, 236, 0.12);
-}
-    .form-row button {
-      border: none;
-      border-radius: 12px;
-      padding: 14px 20px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-.search-btn {
-  white-space: nowrap; /* Keeps 'Find' on one line */
-  padding: 12px 24px;
-  background: #76d2db;
-  color: #ffffff;
-}
-
-    .download-btn {
-      background: #da4948;
-      color: #fff;
-      border-radius: 12px;
-      border: none;
-      padding: 14px 20px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .download-btn:disabled {
-      background: #9fbba9;
-      cursor: not-allowed;
-    }
-
-    .status {
-      margin-top: 11px;
-      text-align: center;
-      min-height: 22px;
-      color: #fff;
-    }
-
-    .certificate-wrap {
-      overflow-x: auto;
-      display: flex;
-      justify-content: center;
-    }
-
-.certificate {
-  width: 210mm;
-  height: 297mm;
-  box-sizing: border-box;
-  background: #fff;
-  position: relative;
-  padding: 25mm 25mm 16mm;
-  border: none;
-  box-shadow: none;
-  font-family: "Montserrat", Times New Roman, Arial, sans-serif;
-  margin: 0 auto;
-  overflow: hidden;
-  page-break-inside: avoid !important;
-}
-.certificate::before {
-  content: "";
-  position: absolute;
-  top: 4mm;
-  left: 4mm;
-  right: 4mm;
-  bottom: 4mm;
-  border: 0.6mm solid #d7bf83;
-  pointer-events: none;
-    display: none !important;
-}
-    #certificate,
-#certificate * {
-  page-break-inside: avoid !important;
-}
-
-.certificate-actions {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin: 0 0 18px;
-  flex-wrap: wrap;
-}
-
-.print-btn {
-  background: #36064d;
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  padding: 14px 20px;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.print-btn:disabled {
-  background: #a7a7a7;
-  cursor: not-allowed;
-}
-
-.print-btn:hover, .download-btn:hover, .search-btn:hover {
-  transform: scale(1.08);
-}
-  .brand {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 18px;
-}
-
-.brand-logo {
-  width: 100px;
-  height: 100px;
-  object-fit: contain;
-}
-
-.brand-text {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.45;
-  
-}
-
-.brand-text .name {
-  font-size: 26px;
-  font-weight: bold;
-  letter-spacing: 0px;
-  line-height: 1.2;
-}
-
-.brand .sub {
-  font-size: 16px;
-}
-
-.brand .contact {
-  font-size: 14px;
-  color: #444;
-}
-    .cert-heading {
-  text-align: center;
-  font-size: 24px;
-  letter-spacing: 2px;
-  font-weight: bold;
-  margin: 15mm 0 1mm;
-}
-
-.cert-number {
-  text-align: center;
-  font-size: 12pt;
-  margin-bottom: 10mm;
-}
-
-.body-text {
-  font-size: 12pt;
-  line-height: 1.9;
-  text-align: justify;
-  margin-bottom: 5mm;
-  word-break: break-word;
-}
-
-    .title-text {
-  font-style: italic;
-  font-weight: 700;
-}
-
-#certTitle {
-  font-style: italic;
-  font-weight: 700;
-}
-
-.footer {
-    display: flex;
-    justify-content: space-between;
-    gap: 24px;
-    margin-top: 10mm;
-  }
-
-
-.footer-left {
-  margin-top: 10mm
-}
-.footer-left,
-.footer-right {
-  width: 46%;
-  font-size: 12pt;
-  line-height: 1.5;
-}
-
-    .signature-space {
-      height: 82px;
-    }
-
-    .signer-name {
-      font-weight: bold;
-    }
-    
-.qr-space {
-  height: 140px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  margin: 5px 0 5px;
-}
-
-#qrcode {
-  width: 140px;
-  height: 140px;
-  background: #fff;
-  margin-left: 0;
-}
-
-.signer-name {
-  font-weight: bold;
-}
-
-/* --- Mobile-Specific Beautification --- */
-@media (max-width: 768px) {
-  body {
-    padding: 16px;
-  }
-
-  .panel h1 {
-    font-size: 16px;
-  }
-
-  /* Certificate Preview Container */
-  .certificate-wrap {
-    width: 100%;
-    /* This ensures the container itself is centered and 
-       doesn't exceed the panel's width */
-    max-width: 100%; 
-    margin: 0 auto;
-    display: flex;
-    justify-content: center;
-    overflow: hidden;
-  }
-
-  /* Scaling the certificate to fit the panel width perfectly */
-  body:not(.pdf-exporting) .certificate {
-    /* Reduced scale slightly for better padding, forced center origin */
-    transform: scale(0.35); 
-    transform-origin: top center;
-    
-    /* flex-shrink: 0 ensures the certificate doesn't 'squish' 
-       before the transform is applied */
-    flex-shrink: 0; 
-    
-    /* Adjusted margin-bottom to pull up the page footer/end */
-    margin-bottom: -190mm; 
-    
-    border: 1px solid #ddd;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    
-    /* Ensure no unexpected left/right margins interfere with centering */
-    left: 0;
-    right: 0;
-    margin-left: auto;
-    margin-right: auto;
-  }
-}
-  /* FORCING CONSISTENCY DURING EXPORT */
-  .pdf-exporting .certificate {
-    transform: none !important;
-    margin: 0 !important;
-    position: absolute !important;
-    left: 0 !important;
-    top: 0 !important;
-    z-index: -9999;
-  }
-
-@media print {
-  @page {
-    margin: 0; /* Removes browser-added headers/footers */
-    size: A4 portrait;
-  }
-
-  html, body {
-    height: 100%;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: hidden; /* Prevents Chrome from scrolling to a second page */
-    -webkit-print-color-adjust: exact; /* Ensures colors/logos render correctly */
-  }
-
-  /* Hide everything except the certificate container */
-  .panel, 
-  .certificate-actions, 
-  .footnote,
-  script {
-    display: none !important;
-  }
-
-  .wrapper {
-    max-width: none;
-    margin: 0;
-    padding: 0;
-    width: 100%;
-  }
-
-  .certificate-wrap {
-    display: block;
-    padding: 0;
-    margin: 0;
-    overflow: visible;
-  }
-
-  .certificate {
-    width: 210mm !important;
-    height: 297mm !important;
-    margin: 0 auto !important;
-    transform: none !important; /* Overrides mobile scaling */
-    box-shadow: none !important;
-    border: none !important;
-    position: relative;
-    page-break-inside: avoid;
-    page-break-after: avoid;
-  }
-}
-    .footnote {
-      font-size: 10px;
-      text-align: center;
-      color: #BFA28C;
-    }
-    .footnote a {
-      text-decoration: none;
-    }
+/* QR Space */
+.qr-space { height: 140px; display: flex; align-items: center; justify-content: flex-start; margin: 5px 0 5px; }
+#qrcode { width: 140px; height: 140px; background: #fff; margin-left: 0; }
+/* Media Queries */
+/* Mobile-Specific Styles */
+@media (max-width: 768px) { body { padding: 16px; } .panel h1 { font-size: 22px; } .certificate-wrap { width: 100%; max-width: 100%; margin: 0 auto; display: flex; justify-content: center; overflow: hidden; } body:not(.pdf-exporting) .certificate { transform: scale(0.35); transform-origin: top center; flex-shrink: 0; margin-bottom: -190mm; border: 1px solid #ddd; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); left: 0; right: 0; margin-left: auto; margin-right: auto; } }
+/* Print-Specific Styles */
+@media print { @page { margin: 0; size: A4 portrait; } html, body { height: 100%; margin: 0 !important; padding: 0 !important; overflow: hidden; -webkit-print-color-adjust: exact; } .panel, .certificate-actions, .action-btns, .footnote, script { display: none !important; } .wrapper { max-width: none; margin: 0; padding: 0; width: 100%; } .certificate-wrap { display: block; padding: 0; margin: 0; overflow: visible; } .certificate { width: 210mm !important; height: 297mm !important; margin: 0 auto !important; transform: none !important; box-shadow: none !important; border: none !important; position: relative; page-break-inside: avoid; page-break-after: avoid; } }
+/* Footer */
+.footer { font-size: 10px; text-align: center; color: #BFA28C; }
+.footer a { text-decoration: none; }
   </style>
 </head>
 <body>
   <div class="wrapper">
 <div class="panel">
-  <h1>PROOFREADING CERTIFICATE</h1>
-
+  <h1>CERTIFICATE</h1>
   <div class="form-row">
     <input type="text" id="searchInput" placeholder="Type the certificate ID, e.g., 22-2026-U9J0" />
     <button class="search-btn" onclick="findCertificate()">Find</button>
   </div>
-
-  <div class="status" id="status"></div>
+    <div id="status" style="color: white; margin-top: 10px; text-align: center;"></div>
 </div>
 
-<div class="certificate-actions">
-  <button class="download-btn" id="downloadBtn" onclick="downloadPDF()" disabled>Download</button>
-  <button class="print-btn" id="printBtn" onclick="printCertificate()" disabled>Print</button>
+<div class="action-btns">
+  <button class="download-btn" id="downloadBtn" onclick="downloadPDF()" disabled>Download PDF</button>
+  <button class="print-btn" id="printBtn" onclick="printCertificate()" disabled>Print Certificate</button>
 </div>
 
     <div class="certificate-wrap">
@@ -424,11 +102,11 @@
   </div>
 </div>
         <div class="cert-heading">CERTIFICATE</div>
-        <div class="cert-number">No. <span id="certNumber">-</span></div>
+        <div class="cert-number">No. <span id="certNumber">00/C-DT/I/2026</span></div>
 
         <div class="body-text">
           This document certifies that the manuscript entitled
-          <span class="title-text">“<span id="certTitle">Title will appear here</span>”</span>
+          <span class="title-text">“<span id="certTitle">The very long manuscript title will be shown here</span>”</span>
           has been edited for proper English language, grammar, punctuation, spelling, and overall style by a qualified proofreader at Dian Translation. The research content and the authors’ intentions were not altered in any way during the proofreading process.
         </div>
 
@@ -436,23 +114,17 @@
          Documents receiving this certificate are considered ready for publication. However, final decisions by journal editors depend on the manuscript’s quality and its suitability for the specific journal, and are entirely independent of whether it has been language-proofread by our service.
         </div>
 
-        <div class="footer">
-          <div class="footer-left">
-
-          </div>
-
-          <div class="footer-right">
-  <div>Batang, <span id="certDate">-</span></div>
-  <div>Proofread and certified by</div>
-  <div class="qr-space">
-    <div id="qrcode"></div>
-  </div>
-  <div class="signer-name">Dian Translation</div>
-</div>
+      <div class="signature-area">
+        <div class="kanan">
+          <div style="margin-bottom: 10px;">Batang, <span id="certDate">January 11, 2026</span></div>
+          <div>Proofread & certified by</div>
+          <div class="qr-space" id="qrcode">QR-Code</div>
+          <div class="signer-name">Dian Translation</div>
         </div>
       </div>
+      </div>
     </div>
-    <p class="footnote">Certificate v.1.0 (April 8, 2026). Managed by <a href="https://diantranslation.com">Dian Translation.</a></p>
+    <p class="footer">Certificate v.1.0 (April 8, 2026). Managed by <a href="https://diantranslation.com">Dian Translation.</a></p>
   </div>
 
 <script>
@@ -722,7 +394,7 @@ async function downloadPDF() {
     });
 
     pdf.addImage(imgData, "JPEG", 0, 0, 210, 297);
-    pdf.save(filename);
+    pdf.save(`Certificate_${document.getElementById("certNumber").textContent}.pdf`);
     status.textContent = "Certificate downloaded successfully.";
   } catch (error) {
     status.textContent = "Failed to generate your certificate.";
