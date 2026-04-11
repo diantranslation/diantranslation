@@ -249,7 +249,7 @@
     if(!search) return;
     
     searchField.value = search;
-    status.textContent = "Searching for invoice data...";
+    status.textContent = "Preparing your invoice...";
     
     try {
       const resp = await fetch(SHEET_URL + "&cache_bust=" + Date.now());
@@ -290,7 +290,7 @@
       renderInvoice(foundFullID, foundData);
       document.getElementById("downloadBtn").disabled = false;
       document.getElementById("printBtn").disabled = false;
-      status.textContent = "Invoice ready.";
+      status.textContent = "Your invoice is ready.";
     } catch (e) {
       status.textContent = "Error loading data.";
     }
@@ -387,7 +387,7 @@
 async function downloadPDF() {
   const status = document.getElementById("status");
   const element = document.getElementById("invoiceArea");
-  status.textContent = "Generating high-quality PDF...";
+  status.textContent = "Generating your invoice...";
 
   try {
     const canvas = await html2canvas(element, {
@@ -419,7 +419,7 @@ async function downloadPDF() {
 
     pdf.addImage(imgData, "JPEG", 0, 0, 210, 297);
     pdf.save(`Invoice_${document.getElementById("invNum").textContent}.pdf`);
-    status.textContent = "Download complete.";
+    status.textContent = "Invoice download is complete.";
   } catch (e) {
     console.error(e);
     status.textContent = "Error generating PDF.";
