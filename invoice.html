@@ -60,6 +60,7 @@
     .footnote { margin-top: 20px; font-size: 12pt; line-height: 1.5; text-align: justify; }
     .signature-area { display: flex; justify-content: flex-start; text-align: left; margin-top: 20px; }
     .signer-name, .total { font-weight: bold; }
+    .services { font-weight: 600; font-style: italic; } 
     .kanan { margin-left: 66%; }
     .qr-space { height: 140px; display: flex; align-items: center; justify-content: flex-start; margin: 5px 0 5px; }
     #qrcode { width: 140px; height: 140px; background: #fff; margin-left: 0; }
@@ -323,7 +324,7 @@
 
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td class="font-bold">${srvName}</td>
+        <td class="services">${srvName}</td>
         <td class="text-right">${row.QTY} words</td>
         <td class="text-right">${formatCurrency(rowSub)}</td>
       `;
