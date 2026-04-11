@@ -342,7 +342,7 @@ function renderQRCode(verificationCode) {
 
       downloadBtn.disabled = false;
       printBtn.disabled = false;
-      status.textContent = "Your certificate is ready to download or print.";
+      status.textContent = "Your certificate is ready.";
     } catch (error) {
       console.error(error);
       status.textContent = "Failed to load CSV data.";
