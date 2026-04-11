@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/png" href="logo.png">
-  <title>Invoice by Dian Translation</title>
+  <title>Invoice - Dian Translation</title>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -32,10 +32,10 @@
     .inv { width: 210mm; min-height: 297mm; background: #fff; padding: 25mm 25mm 16mm; position: relative; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
 
     .invoice-top-bar { display: flex; margin-bottom: 20px; }
-    .invoice-info-box { background: #fff !important; padding: 15px; flex-grow: 1; font-size: 12pt; }
+    .invoice-info-box { background: #fff !important; flex-grow: 1; font-size: 12pt; }
     .invoice-info-box .to { font-weight: 700; font-style: italic; margin-top: 5px; margin-bottom: 5px;}
     .invoice-info-box .from { font-weight: 400; font-style: italic; }
-    .paid-stamp { background: #82C341 !important; height: 70px; margin-top: 13px; color: white !important; padding: 0 40px; display: flex; align-items: center; font-size: 32px; font-weight: bold; border-radius: 5px;}
+    .paid-stamp { background: #82C341 !important; height: 70px; color: white !important; padding: 0 40px; display: flex; align-items: center; font-size: 32px; font-weight: bold; border-radius: 5px;}
     .brand { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; }
     .brand-logo { width: 100px; height: 100px; object-fit: contain; }
     .brand-text { display: flex; flex-direction: column; line-height: 1.45; }
@@ -51,11 +51,12 @@
     .client-info .from { font-weight: 400; font-style: italic; margin: 10px 0; }
 
     table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th { background: #CCCCCC !important; text-align: left; padding: 10px; font-size: 12pt; }
-    td { padding: 10px; border-bottom: 1px solid #eee; font-size: 12pt; }
+    th { background: #CCCCCC !important; text-align: left; padding: 9px; font-size: 12pt; }
+    td { padding: 7px; border-bottom: 1px solid #eee; font-size: 12pt; }
     .row-gray { background: #E6E6E6 !important; }
     .row-white { background: #fffff2 !important; }
     .text-right { text-align: right; }
+   
 
     .footnote { margin-top: 20px; font-size: 12pt; line-height: 1.5; text-align: justify; }
     .signature-area { display: flex; justify-content: flex-start; text-align: left; margin-top: 20px; }
@@ -215,8 +216,8 @@
 
   const SERVICE_MAP = {
     "1": { label: "Proofreading (English)", code: "PR" },
-    "2": { label: "Translation (Bahasa Indonesia to English)", code: "TIN" },
-    "3": { label: "Translation (English to Bahasa Indonesia)", code: "TEN" }
+    "2": { label: "Translation (Indonesian to English)", code: "TIN" },
+    "3": { label: "Translation (English to Indonesian)", code: "TEN" }
   };
 
   function formatDateLong(dateStr) {
@@ -345,7 +346,7 @@
     image: "logo.png",
     imageOptions: {
       crossOrigin: "anonymous",
-      margin: 3,
+      margin: 1,
       imageSize: 0.4
     },
 
