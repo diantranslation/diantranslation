@@ -303,7 +303,18 @@
       status.textContent = "Error loading data.";
     }
   }
-
+  
+  function formatDateLong(dateInput) {
+    const date = new Date(dateInput);
+    if (isNaN(date)) return dateInput;
+  
+    return date.toLocaleDateString('en-US', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  }
+  
   function renderInvoice(invID, data) {
     const first = data[0];
     document.getElementById("invNum").textContent = invID;
