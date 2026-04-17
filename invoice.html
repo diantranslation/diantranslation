@@ -309,10 +309,8 @@
     document.getElementById("invNum").textContent = invID;
   
     
-    const dateParts = first.DATE.split('/');
-    const due = new Date(dateParts[2], dateParts[0]-1, dateParts[1]);
-    due.setDate(due.getDate() + 2);
-    document.getElementById("signDate").textContent = formatDateLong(first.DATE);
+    const dateObj = new Date(first.DATE);
+    document.getElementById("signDate").textContent = formatDateLong(dateObj);
 
     document.getElementById("clientTo").textContent = first.TO;
     document.getElementById("clientFrom").textContent = first.FROM;
