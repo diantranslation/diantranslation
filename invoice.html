@@ -275,8 +275,12 @@
       for (let key in invoices) {
         const firstItem = invoices[key].items[0];
         const srv = SERVICE_MAP[firstItem.SERVICES] || { code: "UNK" };
-        const dateCode = formatShortDateCode(firstItem.DATE);
-        // Generated ID no longer includes a hashtag
+        const normalizedDate = new Date(firstItem.DATE);
+        const m = String(normalizedDate.getMonth() + 1).padStart(2, '0');
+        const d = String(normalizedDate.getDate()).padStart(2, '0');
+        const y = String(normalizedDate.getFullYear()).slice(-2);
+        
+        const dateCode = `${m}${d}${y}`;
         const generatedID = `${srv.code}-${dateCode}-${String(firstItem.ID).padStart(2, '0')}`;
         
         if (generatedID === search) {
