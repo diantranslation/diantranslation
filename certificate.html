@@ -141,7 +141,19 @@ async function loadSheetData() {
     throw new Error("Failed to fetch data.");
   }
 
-  return await response.json();
+  const csvText = await response.text();
+
+  const parsed = Papa.parse(csvText, {
+    header: true,
+    skipEmptyLines: true,
+    transformHeader: (header) =>
+      String(header || "").replace(/^\uFEFF/, "").trim(),
+
+    transform: (value) =>
+      String(value || "").replace(/^\uFEFF/, "").trim()
+  });
+
+  return parsed.data;
 }
 
   function monthToRoman(monthName) {
