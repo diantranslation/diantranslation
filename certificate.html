@@ -128,27 +128,21 @@ body { margin: 0; padding: 24px; background: #E8F5BD; font-family: 'Montserrat',
   </div>
 
 <script>
-  const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQcjvIwmGy0IoeVfU9FA4y3x_cFcLls5YtpsTuSpKQN4m-PNvOiBeeJ7mkVr0fSw5EDEmyVbzp4A05U/pub?gid=1609397311&single=true&output=csv";
+const API_URL = "https://crt.sekolahasoy.workers.dev";
 
-  let selectedCertificate = null;
+let selectedCertificate = null;
 
-  async function loadSheetData() {
-    const response = await fetch(SHEET_CSV_URL, { cache: "no-store" });
-    if (!response.ok) {
-      throw new Error("Failed to fetch CSV.");
-    }
+async function loadSheetData() {
+  const response = await fetch(API_URL, {
+    cache: "no-store"
+  });
 
-    const csvText = await response.text();
-
-    const parsed = Papa.parse(csvText, {
-      header: true,
-      skipEmptyLines: true,
-      transformHeader: (header) => String(header || "").replace(/^\uFEFF/, "").trim(),
-      transform: (value) => String(value || "").replace(/^\uFEFF/, "").trim()
-    });
-
-    return parsed.data;
+  if (!response.ok) {
+    throw new Error("Failed to fetch data.");
   }
+
+  return await response.json();
+}
 
   function monthToRoman(monthName) {
     const months = {
